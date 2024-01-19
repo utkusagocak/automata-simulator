@@ -1,0 +1,40 @@
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.p-1 {
+  padding: 4px;
+}
+
+.p-3 {
+  padding: 16px;
+}
+
+.main {
+  padding: 24px;
+  height: 100%;
+  display: grid;
+  grid-template-areas: 'a b' 'c b' 'c b';
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
+}
+
+.main > :first-child {
+  grid-area: a;
+}
+
+.main > :nth-child(2) {
+  grid-area: b;
+}
+
+.main > :nth-child(3) {
+  grid-area: c;
+}
