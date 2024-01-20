@@ -110,9 +110,14 @@ function App() {
   };
 
   return (
-    <>
-      <div className="main">
+    <div className="main">
+      <div className="graph-container">
+        <DFAVisualizer dfa={dfa} />
+      </div>
+      <div className="dfa-animator">
         <DFAAnimator dfa={dfa} />
+      </div>
+      <div className="text-editor">
         <textarea
           defaultValue={dfaStr}
           className="p-3"
@@ -121,9 +126,8 @@ function App() {
             parser(e.target.value);
           }}
         ></textarea>
-        <DFAVisualizer dfa={dfa} />
       </div>
-    </>
+    </div>
   );
 }
 

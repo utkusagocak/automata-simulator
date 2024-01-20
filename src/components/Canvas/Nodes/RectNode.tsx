@@ -1,23 +1,16 @@
-import React, { useEffect, useRef } from 'react';
-import { Rectangle } from './Rectangle';
+import { useEffect, useRef } from 'react';
+import { Interactable, Rectangle, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
-import { Style } from '../Style';
 
-export interface RectProps {
+export interface RectProps extends Interactable {
   x: number;
   y: number;
   width: number;
   height: number;
   style?: Style;
-
-  onClick?: (event: Event, rect: Rectangle) => void;
-  onPointerDown?: (event: Event, rect: Rectangle) => void;
-  onPointerUp?: (event: Event, rect: Rectangle) => void;
-  onPointerMove?: (event: Event, rect: Rectangle) => void;
-  onDoubleClick?: (event: Event, rect: Rectangle) => void;
 }
 
-export const Rect = ({
+export const RectNode = ({
   x,
   y,
   width,

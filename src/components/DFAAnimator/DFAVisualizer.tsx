@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { DFA } from '../../Automata/DFA';
-import Svg from '../Svg/Svg';
 import { observer } from 'mobx-react-lite';
 import { createDFAGraph } from '../../Automata/DFAGraph';
 import Node from '../Graph/Node';
 import Edge from '../Graph/Edge';
-import { Transform2D } from '../Graph/Transform2D';
+import { Transform2D } from '../Canvas/Transform2D';
 import { useDrag } from '../../hooks/useDrag';
+import Canvas from '../Canvas/Canvas';
 
 export interface DFAVisualizerProps {
   dfa: DFA;
@@ -29,28 +29,18 @@ const DFAVisualizer = observer(({ dfa }: DFAVisualizerProps) => {
     onStartDrag: (e) => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        const clickAreaX = e.pageX - rect.x;
-        const clickAreaY = e.pageY - rect.y;
-        const [x, y] = transform.transformInverse([clickAreaX, clickAreaY]);
+        const x = e.pageX - rect.x;
+        const y = e.pageY - rect.y;
         elementRef.current = { x, y };
       }
     },
     onDrag: (e) => {
       if (ref.current) {
         const rect = ref.current.getBoundingClientRect();
-        const clickAreaX = e.pageX - rect.x;
-        const clickAreaY = e.pageY - rect.y;
-        const [x, y] = transform.transformInverse([clickAreaX, clickAreaY]);
+        const x = e.pageX - rect.x;
+        const y = e.pageY - rect.y;
         transform.move(x - elementRef.current.x, y - elementRef.current.y);
         elementRef.current = { x, y };
-      }
-    },
-    onDrop: (e) => {
-      if (ref.current) {
-        const rect = ref.current.getBoundingClientRect();
-        const clickAreaX = e.pageX - rect.x;
-        const clickAreaY = e.pageY - rect.y;
-        const [x, y] = transform.transformInverse([clickAreaX, clickAreaY]);
       }
     },
   });
@@ -75,13 +65,32 @@ const DFAVisualizer = observer(({ dfa }: DFAVisualizerProps) => {
         }
       }}
     >
-      <Svg transform={transform}>
-        <circle cx={0} cy={0} r={50} fill="red"></circle>
+      <Canvas transform={transform}>
         {graph?.edges &&
-          Object.keys(graph.edges).map((key) => <Edge key={key} graph={graph} edge={graph.edges[key]}></Edge>)}
+          Object.keys(graph.edges).map((key) => (
+            <Edge
+              key={key}
+              graph={graph}
+              edge={graph.edges[key]}
+              isActive={
+                dfa.inTransition &&
+                graph.edges[key].conditions.includes(dfa.input[dfa.currentIndex]) &&
+                graph.edges[key].from == dfa.currentState
+                  ? true
+                  : false
+              }
+            ></Edge>
+          ))}
 
-        {graph?.nodes && Object.keys(graph.nodes).map((state) => <Node key={state} node={graph.nodes[state]}></Node>)}
-      </Svg>
+        {graph?.nodes &&
+          Object.keys(graph.nodes).map((state) => (
+            <Node
+              key={state}
+              node={graph.nodes[state]}
+              isActive={!dfa.inTransition && dfa.currentState == state ? true : false}
+            ></Node>
+          ))}
+      </Canvas>
     </div>
   );
 });

@@ -3,10 +3,14 @@ import { useSize } from '../../hooks/useSize';
 import { RendererContext } from './RendererContext';
 import { Renderer } from './Renderer';
 import { useAnimationFrame } from '../../hooks/useAnimationFrame';
+import { observer } from 'mobx-react-lite';
+import { Transform2D } from './Transform2D';
 
-export interface CanvasProps extends React.HTMLAttributes<HTMLCanvasElement> {}
+export interface CanvasProps extends React.HTMLAttributes<HTMLCanvasElement> {
+  transform: Transform2D;
+}
 
-const Canvas = ({ children, ...props }: CanvasProps) => {
+const Canvas = observer(({ children, transform, ...props }: CanvasProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const rect = useSize(ref);
 
@@ -17,8 +21,13 @@ const Canvas = ({ children, ...props }: CanvasProps) => {
 
   useEffect(() => {
     const renderFrame = (deltaTime: number) => {
-      if (rendererRef.current.canvas) rendererRef.current.draw();
-      // console.log(1000 / deltaTime);
+      if (rendererRef.current.canvas) {
+        if (transform) {
+          rendererRef.current.context.resetTransform();
+          rendererRef.current.context.transform(...transform.canvasTransform);
+        }
+        rendererRef.current.draw();
+      }
     };
 
     frame.set(renderFrame);
@@ -38,6 +47,6 @@ const Canvas = ({ children, ...props }: CanvasProps) => {
       {canvasRef.current && <RendererContext.Provider value={rendererRef.current}>{children}</RendererContext.Provider>}
     </div>
   );
-};
+});
 
 export default Canvas;

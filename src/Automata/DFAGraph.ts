@@ -13,7 +13,7 @@ export function createDFAGraph(dfa: DFA) {
       x: lastX,
       y: lastY,
     };
-    lastX += 200;
+    lastX += 100;
   }
 
   for (const state of dfa.states) {

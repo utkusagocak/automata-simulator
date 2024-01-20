@@ -1,13 +1,12 @@
-import Circle from '../Svg/Circle';
+import { CircleNode } from '../Canvas/Nodes/CircleNode';
+import { TextNode } from '../Canvas/Nodes/TextNode';
 
-const Node = ({ node }: { node: any }) => {
+const Node = ({ node, isActive }: { node: any; isActive?: boolean }) => {
   return (
-    <g key={node.state}>
-      <Circle cx={node.x} cy={node.y} r={25} fill={'orange'}></Circle>
-      <text x={node.x} y={node.y} textAnchor="middle" dominantBaseline={'middle'}>
-        {node.state}
-      </text>
-    </g>
+    <>
+      <CircleNode cx={node.x} cy={node.y} r={20} style={{ fill: isActive ? 'red' : 'orange', stroke: 'orange' }} />
+      <TextNode x={node.x} y={node.y} width={20} textContent={node.state} style={{ fill: 'black' }} />
+    </>
   );
 };
 

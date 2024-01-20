@@ -1,21 +1,20 @@
-import { IsInRect } from '../../math/math';
-import { Rectangle } from './Rect/Rectangle';
+import { Shape } from './Shapes';
 
 export class Renderer {
   canvas!: HTMLCanvasElement;
   context!: CanvasRenderingContext2D;
 
-  elements: Rectangle[] = [];
+  elements: Shape[] = [];
 
   constructor(canvas?: HTMLCanvasElement) {
     if (canvas) this.setCanvas(canvas);
   }
 
-  addElement(element: Rectangle) {
+  addElement(element: Shape) {
     this.elements.push(element);
   }
 
-  removeElement(element: Rectangle) {
+  removeElement(element: Shape) {
     this.elements = this.elements.filter((e) => e !== element);
   }
 
@@ -69,7 +68,7 @@ export class Renderer {
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
 
     for (const element of this.elements) {
-      if (element.onClick && IsInRect(point, element)) {
+      if (element.onClick && element.isInside(point)) {
         return element.onClick(event, element);
       }
     }
@@ -80,7 +79,7 @@ export class Renderer {
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
 
     for (const element of this.elements) {
-      if (element.onPointerDown && IsInRect(point, element)) {
+      if (element.onPointerDown && element.isInside(point)) {
         return element.onPointerDown(event, element);
       }
     }
@@ -91,7 +90,7 @@ export class Renderer {
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
 
     for (const element of this.elements) {
-      if (element.onPointerUp && IsInRect(point, element)) {
+      if (element.onPointerUp && element.isInside(point)) {
         return element.onPointerUp(event, element);
       }
     }
@@ -102,7 +101,7 @@ export class Renderer {
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
 
     for (const element of this.elements) {
-      if (element.onPointerMove && IsInRect(point, element)) {
+      if (element.onPointerMove && element.isInside(point)) {
         return element.onPointerMove(event, element);
       }
     }
@@ -113,7 +112,7 @@ export class Renderer {
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
 
     for (const element of this.elements) {
-      if (element.onDoubleClick && IsInRect(point, element)) {
+      if (element.onDoubleClick && element.isInside(point)) {
         return element.onDoubleClick(event, element);
       }
     }
