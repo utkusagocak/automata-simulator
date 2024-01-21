@@ -3,7 +3,7 @@ import { Circle, Interactable, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
 
-export interface RCircleProps extends Interactable {
+export interface CircleProps extends Interactable {
   cx: number;
   cy: number;
   r: number;
@@ -20,7 +20,7 @@ export const CircleNode = ({
   onPointerMove,
   onPointerUp,
   onDoubleClick,
-}: RCircleProps) => {
+}: CircleProps) => {
   const renderer = useRendererContext();
   const rect = useRef(new Circle(cx, cy, r));
 

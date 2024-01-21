@@ -3,20 +3,12 @@ import { Interactable, Path, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
 
-export interface RectProps extends Interactable {
+export interface PathNode extends Interactable {
   d: string;
   style?: Style;
 }
 
-export const PathNode = ({
-  d,
-  style,
-  onClick,
-  onDoubleClick,
-  onPointerDown,
-  onPointerMove,
-  onPointerUp,
-}: RectProps) => {
+export const PathNode = ({ d, style, onClick, onDoubleClick, onPointerDown, onPointerMove, onPointerUp }: PathNode) => {
   const renderer = useRendererContext();
   const path = useRef(new Path(d));
 
