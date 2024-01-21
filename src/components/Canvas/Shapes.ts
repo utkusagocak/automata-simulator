@@ -1,7 +1,10 @@
 import { Geometry } from '../../math';
 import { LocalTransform } from './Nodes/TransformNode';
+import { Renderer } from './Renderer';
 
 export interface Style {
+  zIndex?: number;
+
   fill?: string;
   stroke?: string;
   strokeWidth?: number;
@@ -21,7 +24,7 @@ export interface Interactable {
 }
 
 export abstract class Shape implements Interactable {
-  style: Style = {};
+  style: Style = { zIndex: 0 };
   transform: LocalTransform | null = null;
 
   onClick?: (event: Event, rect: Shape) => void;
@@ -37,7 +40,7 @@ export abstract class Shape implements Interactable {
     contex.rotate(this.transform.rotation);
   }
 
-  abstract draw(context: CanvasRenderingContext2D): void;
+  abstract draw(renderer: Renderer): void;
   abstract isInside(p: Geometry.Point): boolean;
 }
 
@@ -53,7 +56,8 @@ export class Rectangle extends Shape {
     return false;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  draw(renderer: Renderer) {
+    const context = renderer.context;
     context.save();
     context.translate(this.x, this.y);
     this.applyTransform(context);
@@ -65,6 +69,13 @@ export class Rectangle extends Shape {
     context.fillRect(0, 0, this.width, this.height);
     if (this.style.strokeWidth) context.strokeRect(this.x, this.y, this.width, this.height);
     context.restore();
+
+    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height,
+    });
   }
 }
 
@@ -77,7 +88,9 @@ export class Path extends Shape {
     return false;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  draw(renderer: Renderer) {
+    const context = renderer.context;
+
     context.save();
 
     if (this.style.fill) context.fillStyle = this.style.fill;
@@ -88,6 +101,8 @@ export class Path extends Shape {
     context.fill(path);
     context.stroke(path);
     context.restore();
+
+    // TODO: calculate bounding box for path
   }
 }
 
@@ -101,7 +116,9 @@ export class Circle extends Shape {
     return distanceFromCenter <= this.r;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  draw(renderer: Renderer) {
+    const context = renderer.context;
+
     context.save();
     context.translate(this.cx, this.cy);
     this.applyTransform(context);
@@ -118,6 +135,13 @@ export class Circle extends Shape {
     context.stroke();
     context.closePath();
     context.restore();
+
+    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
+      x: this.cx - this.r,
+      y: this.cy - this.r,
+      width: this.r * 2,
+      height: this.r * 2,
+    });
   }
 }
 
@@ -133,7 +157,9 @@ export class Text extends Shape {
     return false;
   }
 
-  draw(context: CanvasRenderingContext2D) {
+  draw(renderer: Renderer) {
+    const context = renderer.context;
+
     context.save();
     context.translate(this.x, this.y);
     this.applyTransform(context);
@@ -146,23 +172,29 @@ export class Text extends Shape {
     if (this.style.textAlign) context.textAlign = this.style.textAlign;
     if (this.style.textBaseline) context.textBaseline = this.style.textBaseline;
 
+    const textMetrics = context.measureText(this.textContent);
+    const p = {
+      x: 0 - textMetrics.actualBoundingBoxLeft,
+      y: 0 - textMetrics.actualBoundingBoxAscent - 1,
+    };
+    const p1 = {
+      x: 0 + textMetrics.actualBoundingBoxRight + 1,
+      y: 0 + textMetrics.actualBoundingBoxDescent + 1,
+    };
     if (this.style.background) {
       context.save();
       context.fillStyle = this.style.background;
-      const textMetrics = context.measureText(this.textContent);
-      const p = {
-        x: 0 - textMetrics.actualBoundingBoxLeft,
-        y: 0 - textMetrics.actualBoundingBoxAscent - 1,
-      };
-      const p1 = {
-        x: 0 + textMetrics.actualBoundingBoxRight + 1,
-        y: 0 + textMetrics.actualBoundingBoxDescent + 1,
-      };
       context.fillRect(p.x, p.y, textMetrics.width, p1.y - p.y);
       context.restore();
     }
 
     context.fillText(this.textContent, 0, 0);
     context.restore();
+    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
+      x: this.x + p.x,
+      y: this.y + p.y,
+      width: textMetrics.width,
+      height: p1.y - p.y,
+    });
   }
 }

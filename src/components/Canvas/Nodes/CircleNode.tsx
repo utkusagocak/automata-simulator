@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Circle, Interactable, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
@@ -24,7 +24,7 @@ export const CircleNode = ({
   const renderer = useRendererContext();
   const rect = useRef(new Circle(cx, cy, r));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     renderer.addElement(rect.current);
 
     return () => {
@@ -33,16 +33,16 @@ export const CircleNode = ({
   }, []);
 
   const transform = useTransformerContext();
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.transform = transform;
   }, [transform]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.cx = cx;
     rect.current.cy = cy;
     rect.current.r = r;
 
-    rect.current.style = { fill: 'red', ...style };
+    rect.current.style = { ...rect.current.style, fill: 'red', ...style };
 
     rect.current.onClick = onClick;
     rect.current.onPointerDown = onPointerDown;

@@ -133,3 +133,12 @@ export function getMidPointOfArc(center: Point, start: Point, end: Point) {
 
   return midPoint;
 }
+
+export function mergeRectangle(rect0: Rectangle, rect1: Rectangle) {
+  const x1 = Math.min(rect0.x, rect1.x);
+  const y1 = Math.min(rect0.y, rect1.y);
+  const x2 = Math.max(rect0.x + rect0.width, rect1.x + rect1.width);
+  const y2 = Math.max(rect0.y + rect0.height, rect1.y + rect1.height);
+
+  return { x: x1, y: y1, width: x2 - x1, height: y2 - y1 };
+}

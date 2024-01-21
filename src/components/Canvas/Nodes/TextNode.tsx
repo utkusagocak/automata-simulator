@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Interactable, Rectangle, Style, Text } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
@@ -26,7 +26,7 @@ export const TextNode = ({
   const renderer = useRendererContext();
   const rect = useRef(new Text(x, y, width, textContent));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     renderer.addElement(rect.current);
 
     return () => {
@@ -35,16 +35,17 @@ export const TextNode = ({
   }, []);
 
   const transform = useTransformerContext();
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.transform = transform;
   }, [transform]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.x = x;
     rect.current.y = y;
     rect.current.width = width;
     rect.current.textContent = textContent;
     rect.current.style = {
+      ...rect.current.style,
       fill: 'transparent',
       font: '16px monospace',
       textAlign: 'center',

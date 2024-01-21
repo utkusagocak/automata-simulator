@@ -56,11 +56,11 @@ const Edge = ({ edge, graph, isActive = false }: { edge: any; graph: any; isActi
     <>
       <PathNode
         d={`M ${arrowDest.x} ${arrowDest.y} L ${arrow2.x} ${arrow2.y} L ${arrow3.x} ${arrow3.y} z`}
-        style={{ fill: isActive ? 'red' : 'orange', stroke: isActive ? 'red' : 'orange', strokeWidth: 0.5 }}
+        style={{ fill: isActive ? 'red' : 'orange', stroke: isActive ? 'red' : 'orange', strokeWidth: 0.5, zIndex: 0 }}
       />
       <PathNode
         d={`M ${fromX} ${fromY} A ${radius} ${radius} ${0} ${1} ${1} ${toX} ${toY}`}
-        style={{ stroke: isActive ? 'red' : 'orange', fill: 'transparent' }}
+        style={{ stroke: isActive ? 'red' : 'orange', fill: 'transparent', zIndex: 0 }}
       />
       <TextNode
         x={midpoint.x}
@@ -73,6 +73,7 @@ const Edge = ({ edge, graph, isActive = false }: { edge: any; graph: any; isActi
           textAlign: 'center',
           textBaseline: 'middle',
           background: '#242424',
+          zIndex: 1,
         }}
       />
       {/* <CircleNode cx={dt.x} cy={dt.y} r={1} style={{ fill: 'red' }} /> */}

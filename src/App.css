@@ -112,3 +112,10 @@ div:focus {
   width: 1ch;
   margin-right: 1ch;
 }
+
+#visible-graph-area {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  pointer-events: none;
+  /* border: 1px solid red; */
+}

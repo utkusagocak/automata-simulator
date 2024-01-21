@@ -1,10 +1,14 @@
+import { Geometry } from '../../math';
 import { Shape } from './Shapes';
+import { Transform2D } from './Transform2D';
 
 export class Renderer {
   canvas!: HTMLCanvasElement;
   context!: CanvasRenderingContext2D;
 
   elements: Shape[] = [];
+  boundingBox: Geometry.Rectangle = { x: 0, y: 0, width: 0, height: 0 };
+  transform: Transform2D = new Transform2D();
 
   constructor(canvas?: HTMLCanvasElement) {
     if (canvas) this.setCanvas(canvas);
@@ -40,9 +44,32 @@ export class Renderer {
   draw() {
     this.clear();
 
+    this.elements.sort((a, b) => (a?.style?.zIndex ?? 0) - (b?.style?.zIndex ?? 0));
+    this.boundingBox = { x: 0, y: 0, width: 0, height: 0 };
     for (const element of this.elements) {
-      element.draw(this.context);
+      element.draw(this);
     }
+  }
+
+  fitContentToView(viewPort?: Geometry.Rectangle) {
+    if (!this.canvas) return 0;
+    this.draw();
+
+    if (!viewPort) viewPort = { x: 0, y: 0, width: this.canvas.width, height: this.canvas.height };
+
+    const drawingCenterX = (this.boundingBox.x + this.boundingBox.width) / 2;
+    const drawingCenterY = (this.boundingBox.y + this.boundingBox.height) / 2;
+
+    const scaleX = viewPort.width / (this.boundingBox.width + 20);
+    const scaleY = viewPort.height / (this.boundingBox.height + 20);
+    const scale = Math.min(scaleX, scaleY);
+
+    const originX = Math.floor(viewPort.x + viewPort.width / 2) - drawingCenterX;
+    const originY = Math.floor(viewPort.y + viewPort.height / 2) - drawingCenterY;
+
+    this.transform.translation = [originX, originY];
+    this.transform.scaling = [1, 1];
+    this.transform.zoomTo([drawingCenterX - viewPort.x, drawingCenterY - viewPort.y], scale);
   }
 
   // Handle Events

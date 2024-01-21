@@ -111,6 +111,7 @@ function App() {
 
   return (
     <div className="main">
+      <div id="visible-graph-area"></div>
       <div className="graph-container">
         <DFAVisualizer dfa={dfa} />
       </div>

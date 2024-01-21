@@ -1,4 +1,4 @@
-import { RefObject, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { useResizeObserver } from './useResizeObserver';
 
 export function useSize<T extends Element>(ref: RefObject<T>) {

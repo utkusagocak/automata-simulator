@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Interactable, Rectangle, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
@@ -26,7 +26,7 @@ export const RectNode = ({
   const renderer = useRendererContext();
   const rect = useRef(new Rectangle(x, y, width, height));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     renderer.addElement(rect.current);
 
     return () => {
@@ -35,16 +35,16 @@ export const RectNode = ({
   }, []);
 
   const transform = useTransformerContext();
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.transform = transform;
   }, [transform]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     rect.current.x = x;
     rect.current.y = y;
     rect.current.width = width;
     rect.current.height = height;
-    rect.current.style = { fill: 'red', ...style };
+    rect.current.style = { ...rect.current.style, fill: 'red', ...style };
 
     rect.current.onClick = onClick;
     rect.current.onPointerDown = onPointerDown;

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Interactable, Path, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
 import { useTransformerContext } from './TransformNode';
@@ -12,7 +12,7 @@ export const PathNode = ({ d, style, onClick, onDoubleClick, onPointerDown, onPo
   const renderer = useRendererContext();
   const path = useRef(new Path(d));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     renderer.addElement(path.current);
 
     return () => {
@@ -21,13 +21,13 @@ export const PathNode = ({ d, style, onClick, onDoubleClick, onPointerDown, onPo
   }, []);
 
   const transform = useTransformerContext();
-  useEffect(() => {
+  useLayoutEffect(() => {
     path.current.transform = transform;
   }, [transform]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     path.current.d = d;
-    path.current.style = { fill: 'red', ...style };
+    path.current.style = { ...path.current.style, fill: 'red', ...style };
 
     path.current.onClick = onClick;
     path.current.onPointerDown = onPointerDown;
