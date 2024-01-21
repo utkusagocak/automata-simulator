@@ -43,6 +43,11 @@ export function midPointBetween(p1: Point, p2: Point) {
   };
 }
 
+export function angleBetween(from: Point, to: Point) {
+  const translatedPoint = { x: to.x - from.x, y: to.y - from.y };
+  return Math.atan2(translatedPoint.y, translatedPoint.x);
+}
+
 export function toDegree(radian: number) {
   return radian * (180 / Math.PI);
 }
@@ -110,10 +115,10 @@ export function getIntersectionOf2Circles(circle1: Circle, circle2: Circle): [Po
 }
 
 // TODO
-export function getMidPointOfArc(center: Point, point1: Point, point2: Point) {
+export function getMidPointOfArc(center: Point, start: Point, end: Point) {
   // sweep-flag 1
-  const p1 = toPolar(point1, center);
-  const p2 = toPolar(point2, center);
+  const p1 = toPolar(start, center);
+  const p2 = toPolar(end, center);
   const angleBetween1 = p1.t - p2.t;
   const angleBetween2 = 2 * Math.PI - Math.abs(angleBetween1);
 

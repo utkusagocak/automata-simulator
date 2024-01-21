@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Interactable, Rectangle, Style, Text } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
+import { useTransformerContext } from './TransformNode';
 
 export interface TextProps extends Interactable {
   x: number;
@@ -32,6 +33,11 @@ export const TextNode = ({
       renderer.removeElement(rect.current);
     };
   }, []);
+
+  const transform = useTransformerContext();
+  useEffect(() => {
+    rect.current.transform = transform;
+  }, [transform]);
 
   useEffect(() => {
     rect.current.x = x;

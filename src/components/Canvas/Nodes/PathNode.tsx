@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Interactable, Path, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
+import { useTransformerContext } from './TransformNode';
 
 export interface RectProps extends Interactable {
   d: string;
@@ -26,6 +27,11 @@ export const PathNode = ({
       renderer.removeElement(path.current);
     };
   }, []);
+
+  const transform = useTransformerContext();
+  useEffect(() => {
+    path.current.transform = transform;
+  }, [transform]);
 
   useEffect(() => {
     path.current.d = d;

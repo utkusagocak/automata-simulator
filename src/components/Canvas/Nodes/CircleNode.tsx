@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Circle, Interactable, Style } from '../Shapes';
 import { useRendererContext } from '../RendererContext';
+import { useTransformerContext } from './TransformNode';
 
 export interface RCircleProps extends Interactable {
   cx: number;
@@ -30,6 +31,11 @@ export const CircleNode = ({
       renderer.removeElement(rect.current);
     };
   }, []);
+
+  const transform = useTransformerContext();
+  useEffect(() => {
+    rect.current.transform = transform;
+  }, [transform]);
 
   useEffect(() => {
     rect.current.cx = cx;
