@@ -26,6 +26,10 @@
   align-items: stretch;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .gap-1 {
   gap: 4px;
 }
@@ -53,11 +57,17 @@
 
 .text-editor {
   grid-column: 2;
-  grid-row: 2 / 4;
+  grid-row: 2 / 3;
   z-index: 1;
 
   border-radius: 4px;
   box-shadow: 0px 0px 8px 0px white;
+}
+
+.dfa-designer {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  z-index: 1;
 }
 
 .text-editor textarea {
@@ -75,10 +85,6 @@ input {
   font-size: 1rem;
 
   resize: none;
-}
-
-div:focus {
-  border: 1px solid red;
 }
 
 .dfa-animator-input-container {
@@ -118,4 +124,8 @@ div:focus {
   grid-row: 1 / 4;
   pointer-events: none;
   /* border: 1px solid red; */
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

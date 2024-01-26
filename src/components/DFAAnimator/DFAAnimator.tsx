@@ -21,6 +21,7 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
       <div className="d-flex justify-content-center dfa-animator-input-container">
         <input
           className=""
+          placeholder="Enter Input"
           value={dfa.input}
           onChange={(e) => {
             dfa.setInput(e.target.value);

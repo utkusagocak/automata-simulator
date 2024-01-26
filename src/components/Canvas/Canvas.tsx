@@ -122,9 +122,7 @@ const Canvas = observer(({ children, focusRectangle, ...props }: CanvasProps) =>
       }}
     >
       <canvas ref={canvasRef} width={Math.floor(rect.width)} height={Math.floor(rect.height)} {...props}></canvas>
-      <RendererContext.Provider value={rendererRef.current}>
-        {canvasRef.current ? children : <></>}
-      </RendererContext.Provider>
+      <RendererContext.Provider value={rendererRef.current}>{children}</RendererContext.Provider>
     </div>
   );
 });

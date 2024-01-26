@@ -3,14 +3,22 @@ import { delay } from '../helpers/usefull';
 
 export type DFATransitionFunction = (currentState: DFAState, input: string) => DFAState;
 export type DFATransitionMatrix = { [key: DFAState]: { [key: string]: DFAState } };
-export type DFATransitions = DFATransitionFunction | DFATransitionMatrix;
+export type DFATransitions = DFATransitionMatrix;
 
-export type DFAState = string | number;
+export type DFAState = string;
 
 export interface DFAAction {
   from: DFAState;
   with: number;
   to: DFAState;
+}
+
+export interface DFAData {
+  Q: DFAState[];
+  A: string;
+  I: DFAState;
+  F: DFAState[];
+  T: DFATransitionMatrix;
 }
 
 export class DFA {
@@ -31,7 +39,7 @@ export class DFA {
   constructor(
     public readonly states: DFAState[],
     public readonly alphabet: string,
-    public readonly transitionFunction: DFATransitions,
+    public readonly transitionFunction: DFATransitionMatrix,
     public readonly initialState: DFAState,
     public readonly finalState: DFAState[],
   ) {
@@ -56,11 +64,9 @@ export class DFA {
 
   nextState(state: DFAState, letter: string): DFAState {
     let nextState = state;
-    if (typeof this.transitionFunction === 'function') {
-      nextState = this.transitionFunction(state, letter);
-    } else {
-      nextState = this.transitionFunction?.[state]?.[letter];
-    }
+
+    nextState = this.transitionFunction?.[state]?.[letter];
+
     return nextState;
   }
 
