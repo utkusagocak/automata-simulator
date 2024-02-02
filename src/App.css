@@ -111,7 +111,7 @@ input {
 .dfa-animator-input-container input:active,
 .dfa-animator-input-container input:focus-visible {
   outline: 0px;
-  box-shadow: inset 0px -3px 0px -1px rgba(255, 255, 255, 0.5);
+  /* box-shadow: inset 0px -3px 0px -1px rgba(255, 255, 255, 0.5); */
 }
 
 .dfa-animator-input-container div {

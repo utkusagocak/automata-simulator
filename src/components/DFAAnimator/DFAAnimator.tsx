@@ -10,10 +10,7 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
     <div className="d-flex flex-column align-items-center gap-1">
       <div className="d-flex justify-content-center">
         {dfa.states.map((state) => (
-          <div
-            key={state}
-            style={{ color: !dfa.inTransition && state === dfa.currentState ? 'orange' : '', paddingRight: '1ch' }}
-          >
+          <div key={state} style={{ color: state === dfa.currentState ? 'orange' : '', paddingRight: '1ch' }}>
             {state}
           </div>
         ))}
@@ -28,7 +25,7 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
           }}
         ></input>
         {dfa.input.split('').map((l, i) => (
-          <div key={i} className="" style={{ color: dfa.inTransition && i === dfa.currentIndex ? 'red' : '' }}>
+          <div key={i} className="" style={{ color: i === dfa.currentIndex ? 'red' : '' }}>
             {l}
           </div>
         ))}
@@ -38,6 +35,10 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
         <button
           className="flex-grow-1"
           onClick={(e) => {
+            if (dfa.isEnd()) {
+              dfa.currentIndex = -1;
+              dfa.currentState = dfa.initialState;
+            }
             !dfa.inTransition && dfa.nextAsync();
           }}
           disabled={dfa.inTransition}
@@ -47,9 +48,19 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
         <button
           className="flex-grow-1"
           onClick={(e) => {
+            dfa.currentIndex = -1;
+            dfa.currentState = dfa.initialState;
+          }}
+          disabled={dfa.currentIndex === -1}
+        >
+          Reset
+        </button>
+        <button
+          className="flex-grow-1"
+          onClick={(e) => {
             !dfa.inTransition && dfa.nextAsync();
           }}
-          disabled={dfa.inTransition}
+          disabled={dfa.inTransition || dfa.isEnd()}
         >
           Next Step
         </button>

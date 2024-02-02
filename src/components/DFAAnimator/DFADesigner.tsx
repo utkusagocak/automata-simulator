@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { DFA, DFAData, DFAState, DFATransitionMatrix } from '../../Automata/DFA';
+import { useEffect, useState } from 'react';
+import { DFA, DFAState, DFATransitionMatrix } from '../../Automata/DFA';
 
 export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) => void }) => {
   const [states, setStates] = useState([...dfa.states]);
@@ -10,7 +10,6 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
 
   useEffect(() => {
     const newDfa = new DFA(states, alphabet.join(''), transitions, initialState as DFAState, finalStates);
-    console.log('a', newDfa, DFA.isDFAValid(newDfa));
     if (DFA.isDFAValid(newDfa)) {
       console.log('onChange');
       onChange(newDfa);
@@ -21,12 +20,14 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
     <div
       style={{
         display: 'grid',
-        width: '100%',
+        width: '',
         height: '100%',
-        gridTemplateColumns: `1.5rem 1.5rem 2rem ${alphabet.length > 0 ? `repeat(${alphabet.length}, 1fr)` : ''}  2rem`,
+        gridTemplateColumns: `1.5rem 1.5rem 2rem ${
+          alphabet.length > 0 ? `repeat(${alphabet.length}, 4rem)` : ''
+        }  2rem`,
         gridTemplateRows: `2rem ${states.length > 0 ? `repeat(${states.length}, 2rem)` : ''} 2rem`,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'end',
         gap: '2px',
       }}
       tabIndex={-1}
@@ -75,6 +76,8 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
             gridRow: `${index + 2}`,
             width: '100%',
             height: '100%',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
           <input
@@ -95,6 +98,8 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
             gridRow: `${index + 2}`,
             width: '100%',
             height: '100%',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
           <input
@@ -181,7 +186,6 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
           gridRow: `${1}`,
           width: '100%',
           height: '100%',
-          // borderRadius: '0px'
         }}
       >
         I
@@ -195,7 +199,6 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
           gridRow: `${1}`,
           width: '100%',
           height: '100%',
-          // borderRadius: '0px'
         }}
       >
         F
@@ -209,7 +212,6 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
           gridRow: `${1}`,
           width: '100%',
           height: '100%',
-          // borderRadius: '0px'
         }}
       >
         S\A
