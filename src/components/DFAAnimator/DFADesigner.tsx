@@ -4,16 +4,13 @@ import { DFA, DFAState, DFATransitionMatrix } from '../../Automata/DFA';
 export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) => void }) => {
   const [states, setStates] = useState([...dfa.states]);
   const [alphabet, setAlphabet] = useState([...dfa.alphabet.split('')]);
-  const [transitions, setTrasition] = useState<DFATransitionMatrix>({ ...dfa.transitionFunction });
+  const [transitions, setTransitions] = useState<DFATransitionMatrix>({ ...dfa.transitionFunction });
   const [initialState, setInitialState] = useState<DFAState>(dfa.initialState);
   const [finalStates, setFinalStates] = useState<DFAState[]>([...dfa.finalState]);
 
   useEffect(() => {
     const newDfa = new DFA(states, alphabet.join(''), transitions, initialState as DFAState, finalStates);
-    if (DFA.isDFAValid(newDfa)) {
-      console.log('onChange');
-      onChange(newDfa);
-    }
+    onChange(newDfa);
   }, [states, alphabet, transitions, initialState, finalStates]);
 
   return (
@@ -171,7 +168,7 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
               if (!transitions[state]) transitions[state] = {};
               console.log(state);
               transitions[state][letter] = desState;
-              setTrasition({ ...transitions });
+              setTransitions({ ...transitions });
             }}
             value={transitions?.[state]?.[letter] ?? ''}
           ></input>
