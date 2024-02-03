@@ -64,6 +64,12 @@ export class DFA {
     });
   }
 
+  moveState(from: number, to: number) {
+    const state = this.states[from];
+    this.states.splice(from, 1);
+    this.states.splice(to, 0, state);
+  }
+
   updateState(id: string, name: string) {
     const state = this.states.find((s) => s.id === id);
     if (state) state.name = name;

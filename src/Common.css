@@ -31,6 +31,7 @@ button:hover {
   border-radius: 50%;
 
   width: fit-content;
+  height: fit-content;
   aspect-ratio: 1;
 
   border-color: transparent;
@@ -40,4 +41,10 @@ button:hover {
 .btn-danger {
   --bg: rgba(255, 0, 0, 0.7);
   --hover-bg: rgba(255, 0, 0, 0.4);
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

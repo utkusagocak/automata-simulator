@@ -6,7 +6,11 @@ import { DFADesigner } from './components/DFAAnimator/DFADesigner';
 
 import './App.css';
 import './Common.css';
-
+/**
+ * TODO:
+ *  * DFA Grap is not updating automaticly.
+ *  * Automatic animation (start, stop, reset, etc.)
+ */
 const states = ['1', '2', '3', '4'];
 const alphabet = 'ab';
 const transitions: DFATransitions = {
@@ -57,7 +61,7 @@ function App() {
       <div className="dfa-controls-container">
         <DFAControls dfa={dfa} />
       </div>
-      <div className="dfa-designer">
+      <div className="dfa-designer-container">
         <DFADesigner dfa={dfa} />
       </div>
     </div>
