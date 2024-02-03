@@ -12,6 +12,8 @@ export function createDFAGraph(dfa: DFA) {
       state: state,
       x: lastX,
       y: lastY,
+      isStart: dfa.initialState === state.id,
+      isAccept: dfa.acceptStates.has(state.id),
     };
     lastX += 100;
   }
