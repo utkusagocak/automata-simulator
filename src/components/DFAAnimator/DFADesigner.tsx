@@ -166,7 +166,7 @@ export const DFADesigner = observer(({ dfa }: { dfa: DFA }) => {
             }}
           >
             <input
-              type="checkbox"
+              type="radio"
               checked={state.id === dfa.initialState}
               onChange={(e) => {
                 if (e.target.checked) dfa.setInitialState(state);

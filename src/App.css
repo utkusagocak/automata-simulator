@@ -111,8 +111,13 @@ input {
 }
 
 .dfa-controls.disabled {
-  pointer-events: none;
   filter: blur(1px);
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.dfa-controls.disabled * {
+  pointer-events: none;
 }
 
 .dfa-controls-input-container {

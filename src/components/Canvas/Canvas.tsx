@@ -80,6 +80,8 @@ const Canvas = observer(({ children, focusRectangle, ...props }: CanvasProps) =>
   useDrag(ref, {
     onStartDrag: (e) => {
       if (ref.current) {
+        ref.current.focus();
+
         const renderer = rendererRef.current;
         const rect = ref.current.getBoundingClientRect();
         const x = e.pageX - rect.x;
@@ -103,6 +105,7 @@ const Canvas = observer(({ children, focusRectangle, ...props }: CanvasProps) =>
     <div
       ref={ref}
       style={{ width: '100%', height: '100%', contain: 'paint' }}
+      tabIndex={0}
       onWheel={(e) => {
         const clickArea = ref.current;
         if (clickArea) {
