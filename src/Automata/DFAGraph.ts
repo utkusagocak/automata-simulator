@@ -1,14 +1,14 @@
 import { DFA, DFAState } from './DFA';
 
 export function createDFAGraph(dfa: DFA) {
-  const nodes: { [key: DFAState]: any } = {};
+  const nodes: { [key: string]: any } = {};
   const edges: { [key: string]: any } = {};
   // if (!DFA.isDFAValid(dfa)) return { nodes, edges };
 
   const lastY = 0;
   let lastX = 0;
   for (const state of dfa.states) {
-    nodes[state] = {
+    nodes[state.id] = {
       state: state,
       x: lastX,
       y: lastY,
@@ -18,12 +18,12 @@ export function createDFAGraph(dfa: DFA) {
 
   for (const state of dfa.states) {
     for (const letter of dfa.alphabet) {
-      const nextState = dfa.nextState(state, letter);
-      const key = `${state}-${nextState}`;
+      const nextStateId = dfa.nextState(state.id, letter);
+      const key = `${state.id}-${nextStateId}`;
 
-      if (nextState && nodes[state] && nodes[nextState]) {
+      if (nextStateId && nodes[state.id] && nodes[nextStateId]) {
         if (!edges[key]) {
-          edges[key] = { from: state, to: nextState, conditions: [] };
+          edges[key] = { from: state.id, to: nextStateId, conditions: [] };
         }
 
         edges[key].conditions.push(letter);

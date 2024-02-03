@@ -11,13 +11,7 @@ export interface DFAVisualizerProps {
 }
 
 const DFAVisualizer = observer(({ dfa }: DFAVisualizerProps) => {
-  const [graph, setGraph] = useState<any>({});
-
-  useEffect(() => {
-    const graph = createDFAGraph(dfa);
-    setGraph(graph);
-  }, [dfa]);
-
+  const graph = createDFAGraph(dfa);
   const focusRectangle = document.getElementById('visible-graph-area')?.getBoundingClientRect();
 
   return (

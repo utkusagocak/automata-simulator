@@ -5,17 +5,19 @@ export interface DFAAnimatorProps {
   dfa: DFA;
 }
 
-const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
+const DFAControls = observer(({ dfa }: DFAAnimatorProps) => {
   return (
-    <div className="d-flex flex-column align-items-center gap-1">
+    <div
+      className={`dfa-controls d-flex flex-column align-items-center gap-1 ${DFA.isDFAValid(dfa) ? '' : 'disabled'}`}
+    >
       <div className="d-flex justify-content-center">
         {dfa.states.map((state) => (
-          <div key={state} style={{ color: state === dfa.currentState ? 'orange' : '', paddingRight: '1ch' }}>
-            {state}
+          <div key={state.id} style={{ color: state.id === dfa.currentState ? 'orange' : '', paddingRight: '1ch' }}>
+            {state.name}
           </div>
         ))}
       </div>
-      <div className="d-flex justify-content-center dfa-animator-input-container">
+      <div className="d-flex justify-content-center dfa-controls-input-container">
         <input
           className=""
           placeholder="Enter Input"
@@ -69,4 +71,4 @@ const DFAAnimator = observer(({ dfa }: DFAAnimatorProps) => {
   );
 });
 
-export default DFAAnimator;
+export default DFAControls;

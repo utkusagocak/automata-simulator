@@ -1,0 +1,43 @@
+button {
+  cursor: pointer;
+
+  --bg: rgb(59, 59, 59, 0.9);
+  --hover-bg: rgb(59, 59, 59, 0.9);
+  --padding-block: 2px;
+  --padding-inline: 6px;
+
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  background-color: var(--bg);
+  font-size: 1rem;
+  transition: background-color 0.25s linear;
+  padding: var(--padding-block) var(--padding-inline);
+}
+
+button:hover {
+  background-color: var(--hover-bg);
+}
+
+.icon-btn {
+  --bg: transparent !important;
+  --hover-bg: rgb(59, 59, 59, 0.9);
+  --padding-inline: 4px;
+  --padding-block: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  width: fit-content;
+  aspect-ratio: 1;
+
+  border-color: transparent;
+  margin: 4px;
+}
+
+.btn-danger {
+  --bg: rgba(255, 0, 0, 0.7);
+  --hover-bg: rgba(255, 0, 0, 0.4);
+}

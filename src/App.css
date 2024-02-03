@@ -49,7 +49,7 @@
   z-index: 0;
 }
 
-.dfa-animator {
+.dfa-controls-container {
   grid-column: 2;
   grid-row: 1;
   z-index: 1;
@@ -76,7 +76,6 @@
 }
 
 textarea,
-button,
 input {
   border-width: 1px;
   border-style: solid;
@@ -87,13 +86,18 @@ input {
   resize: none;
 }
 
-.dfa-animator-input-container {
+.dfa-controls.disabled {
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+.dfa-controls-input-container {
   position: relative;
   font-size: 1.25rem;
   min-height: 1.5rem;
 }
 
-.dfa-animator-input-container input {
+.dfa-controls-input-container input {
   position: absolute;
   inset: 0;
   text-align: center;
@@ -107,14 +111,14 @@ input {
   caret-color: white;
 }
 
-.dfa-animator-input-container input:focus,
-.dfa-animator-input-container input:active,
-.dfa-animator-input-container input:focus-visible {
+.dfa-controls-input-container input:focus,
+.dfa-controls-input-container input:active,
+.dfa-controls-input-container input:focus-visible {
   outline: 0px;
   /* box-shadow: inset 0px -3px 0px -1px rgba(255, 255, 255, 0.5); */
 }
 
-.dfa-animator-input-container div {
+.dfa-controls-input-container div {
   width: 1ch;
   margin-right: 1ch;
 }

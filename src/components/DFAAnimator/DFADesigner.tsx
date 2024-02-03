@@ -1,18 +1,8 @@
-import { useEffect, useState } from 'react';
-import { DFA, DFAState, DFATransitionMatrix } from '../../Automata/DFA';
+import { LuPlus, LuTrash } from 'react-icons/lu';
+import { DFA } from '../../Automata/DFA';
+import { observer } from 'mobx-react-lite';
 
-export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) => void }) => {
-  const [states, setStates] = useState([...dfa.states]);
-  const [alphabet, setAlphabet] = useState([...dfa.alphabet.split('')]);
-  const [transitions, setTransitions] = useState<DFATransitionMatrix>({ ...dfa.transitionFunction });
-  const [initialState, setInitialState] = useState<DFAState>(dfa.initialState);
-  const [finalStates, setFinalStates] = useState<DFAState[]>([...dfa.finalState]);
-
-  useEffect(() => {
-    const newDfa = new DFA(states, alphabet.join(''), transitions, initialState as DFAState, finalStates);
-    onChange(newDfa);
-  }, [states, alphabet, transitions, initialState, finalStates]);
-
+export const DFADesigner = observer(({ dfa }: { dfa: DFA }) => {
   return (
     <div
       style={{
@@ -20,52 +10,51 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
         width: '',
         height: '100%',
         gridTemplateColumns: `1.5rem 1.5rem 2rem ${
-          alphabet.length > 0 ? `repeat(${alphabet.length}, 4rem)` : ''
+          dfa.alphabet.length > 0 ? `repeat(${dfa.alphabet.length}, 4rem)` : ''
         }  2rem`,
-        gridTemplateRows: `2rem ${states.length > 0 ? `repeat(${states.length}, 2rem)` : ''} 2rem`,
+        gridTemplateRows: `2rem ${dfa.states.length > 0 ? `repeat(${dfa.states.length}, 2rem)` : ''} 2rem`,
         alignItems: 'center',
         justifyContent: 'end',
         gap: '2px',
       }}
       tabIndex={-1}
     >
-      {states.map((state, index) => (
-        <>
-          <input
-            key={index}
-            className="d-flex justify-content-center align-center"
-            style={{
-              gridColumn: `${3}`,
-              gridRow: `${index + 2}`,
-              width: '100%',
-              height: '100%',
-              textAlign: 'center',
-              // borderRadius: '0px',
-              border: '1px solid transparent',
-            }}
-            value={state}
-            onChange={(e) => {
-              const value = e.target.value;
-              const state = value.length > 1 ? value[value.length - 1] : value;
-              states[index] = state;
-              setStates([...states]);
-            }}
-          ></input>
-          <button
-            key={index + '-delete'}
-            className="d-flex justify-content-center align-center cursor-pointer"
-            style={{ gridColumn: `${-2}`, gridRow: `${index + 2}`, width: '100%', height: '100%' }}
-            onClick={() => {
-              const states2 = states.filter((_, i) => i !== index);
-              setStates(states2);
-            }}
-          >
-            -
-          </button>
-        </>
+      {dfa.states.map((state, index) => (
+        <input
+          key={state.id}
+          className="d-flex justify-content-center align-center"
+          style={{
+            gridColumn: `${3}`,
+            gridRow: `${index + 2}`,
+            width: '100%',
+            height: '100%',
+            textAlign: 'center',
+            // borderRadius: '0px',
+            border: '1px solid transparent',
+          }}
+          value={state.name}
+          onChange={(e) => {
+            const value = e.target.value;
+            const stateName = value.length > 1 ? value[value.length - 1] : value;
+            dfa.updateState(state.id, stateName);
+          }}
+        ></input>
       ))}
 
-      {states.map((state, index) => (
+      {dfa.states.map((state, index) => (
+        <button
+          key={index + '-delete'}
+          className="icon-btn btn-danger"
+          style={{ gridColumn: `${-2}`, gridRow: `${index + 2}` }}
+          onClick={() => {
+            dfa.removeState(state);
+          }}
+        >
+          <LuTrash />
+        </button>
+      ))}
+
+      {dfa.states.map((state, index) => (
         <div
           key={index}
           style={{
@@ -79,15 +68,15 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
         >
           <input
             type="checkbox"
-            checked={state === initialState}
+            checked={state.id === dfa.initialState}
             onChange={(e) => {
-              if (e.target.checked) setInitialState(state);
+              if (e.target.checked) dfa.setInitialState(state);
             }}
           ></input>
         </div>
       ))}
 
-      {states.map((state, index) => (
+      {dfa.states.map((state, index) => (
         <div
           key={index}
           style={{
@@ -101,57 +90,64 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
         >
           <input
             type="checkbox"
-            checked={finalStates.includes(state)}
+            checked={dfa.acceptStates.has(state.id)}
             onChange={(e) => {
-              if (finalStates.includes(state)) setFinalStates(finalStates.filter((f) => f !== state));
-              else setFinalStates([...finalStates, state]);
+              if (dfa.acceptStates.has(state.id)) dfa.removeAcceptState(state);
+              else dfa.addAcceptState(state);
             }}
           ></input>
         </div>
       ))}
 
-      {alphabet.map((letter, index) => {
+      {dfa.alphabet.map((letter, index) => {
         return (
-          <>
-            <input
-              key={index}
-              className="d-flex justify-content-center align-center"
-              style={{
-                gridColumn: `${index + 4}`,
-                gridRow: `${1}`,
-                width: '100%',
-                height: '100%',
-                textAlign: 'center',
-                // borderRadius: '0px',
-                border: '1px solid transparent',
-              }}
-              value={letter}
-              onChange={(e) => {
-                const value = e.target.value;
-                const letter = value.length > 1 ? value[value.length - 1] : value;
+          <input
+            key={index}
+            className="d-flex justify-content-center align-center"
+            style={{
+              gridColumn: `${index + 4}`,
+              gridRow: `${1}`,
+              width: '100%',
+              height: '100%',
+              textAlign: 'center',
+              // borderRadius: '0px',
+              border: '1px solid transparent',
+            }}
+            value={letter}
+            onChange={(e) => {
+              const alphabet = [...dfa.alphabet];
+              const value = e.target.value;
+              const letter = value.length > 1 ? value[value.length - 1] : value;
+              if (!alphabet.includes(letter)) {
                 alphabet[index] = letter;
-                setAlphabet([...alphabet]);
-              }}
-            ></input>
-            <button
-              key={index + '-delete'}
-              className="d-flex justify-content-center align-center cursor-pointer"
-              style={{ gridColumn: `${index + 4}`, gridRow: `${-2}`, width: '100%', height: '100%' }}
-              onClick={() => {
-                const alphabet2 = alphabet.filter((_, i) => i !== index);
-                setAlphabet(alphabet2);
-              }}
-            >
-              -
-            </button>
-          </>
+                dfa.setAlphabet(alphabet);
+              }
+            }}
+          ></input>
         );
       })}
 
-      {states.map((state, stateIndex) =>
-        alphabet.map((letter, letterIndex) => (
+      {dfa.alphabet.map((letter, index) => {
+        return (
+          <button
+            key={index + '-delete'}
+            className="icon-btn btn-danger"
+            style={{ gridColumn: `${index + 4}`, gridRow: `${-2}`, justifySelf: 'center' }}
+            onClick={() => {
+              const alphabet = [...dfa.alphabet];
+              const alphabet2 = alphabet.filter((_, i) => i !== index);
+              dfa.setAlphabet(alphabet2);
+            }}
+          >
+            <LuTrash />
+          </button>
+        );
+      })}
+
+      {dfa.states.map((state, stateIndex) =>
+        dfa.alphabet.map((letter, letterIndex) => (
           <input
-            key={`${stateIndex}-${letterIndex}`}
+            key={`${state.id}-${letterIndex}`}
             className="d-flex justify-content-center align-center"
             style={{
               gridColumn: `${letterIndex + 4}`,
@@ -164,13 +160,11 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
             }}
             onChange={(e) => {
               const value = e.target.value;
-              const desState = value.length > 1 ? value[value.length - 1] : value;
-              if (!transitions[state]) transitions[state] = {};
-              console.log(state);
-              transitions[state][letter] = desState;
-              setTransitions({ ...transitions });
+              const desStateName = value.length > 1 ? value[value.length - 1] : value;
+              const desState = dfa.states.find((s) => s.name === desStateName);
+              if (desState) dfa.addTransition(state, letter, desState);
             }}
-            value={transitions?.[state]?.[letter] ?? ''}
+            value={dfa.getStateFromId(dfa.nextState(state.id, letter))?.name ?? ''}
           ></input>
         )),
       )}
@@ -216,21 +210,21 @@ export const DFADesigner = ({ dfa, onChange }: { dfa: DFA; onChange: (dfa: DFA) 
 
       <button
         key={'add-state'}
-        className="d-flex justify-content-center align-center cursor-pointer"
-        style={{ gridColumn: `${-2}`, gridRow: `${-2}`, width: '100%', height: '100%' }}
-        onClick={() => setStates((s) => [...s, ''])}
+        className="icon-btn"
+        style={{ gridColumn: `${3}`, gridRow: `${-2}` }}
+        onClick={() => dfa.addState('')}
       >
-        +
+        <LuPlus />
       </button>
 
       <button
         key={'add-letter'}
-        className="d-flex justify-content-center align-center cursor-pointer"
-        style={{ gridColumn: `${-2}`, gridRow: `${1}`, width: '100%', height: '100%' }}
-        onClick={() => setAlphabet((a) => [...a, ''])}
+        className="icon-btn"
+        style={{ gridColumn: `${-2}`, gridRow: `${1}` }}
+        onClick={() => dfa.setAlphabet([...dfa.alphabet, ''])}
       >
-        +
+        <LuPlus />
       </button>
     </div>
   );
-};
+});
