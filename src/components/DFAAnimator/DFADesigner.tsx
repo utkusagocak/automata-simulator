@@ -202,8 +202,7 @@ export const DFADesigner = observer(({ dfa }: { dfa: DFA }) => {
             value={state.name}
             onChange={(e) => {
               const value = e.target.value;
-              const stateName = value.length > 1 ? value[value.length - 1] : value;
-              dfa.updateState(state.id, stateName);
+              dfa.updateState(state.id, value);
             }}
           ></input>
           {dfa.alphabet.map((letter, letterIndex) => (

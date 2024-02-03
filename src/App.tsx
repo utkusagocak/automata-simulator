@@ -10,6 +10,7 @@ import './Common.css';
  * TODO:
  *  * DFA Grap is not updating automaticly.
  *  * Automatic animation (start, stop, reset, etc.)
+ *  * Animations and cursors for DFAControls
  */
 const states = ['1', '2', '3', '4'];
 const alphabet = 'ab';
