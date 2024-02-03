@@ -38,8 +38,7 @@ const DFAControls = observer(({ dfa }: DFAAnimatorProps) => {
           className="flex-grow-1"
           onClick={(e) => {
             if (dfa.isEnd()) {
-              dfa.currentIndex = -1;
-              dfa.currentState = dfa.initialState;
+              dfa.reset();
             }
             !dfa.inTransition && dfa.nextAsync();
           }}
@@ -50,8 +49,7 @@ const DFAControls = observer(({ dfa }: DFAAnimatorProps) => {
         <button
           className="flex-grow-1"
           onClick={(e) => {
-            dfa.currentIndex = -1;
-            dfa.currentState = dfa.initialState;
+            dfa.reset();
           }}
           disabled={dfa.currentIndex === -1}
         >

@@ -94,11 +94,13 @@ export class DFA {
 
   setInitialState(state: DFAState) {
     this.initialState = state.id;
+    this.reset();
   }
 
   addAcceptState(state: DFAState | string) {
     const id = typeof state === 'string' ? state : state.id;
     this.acceptStates.add(id);
+    this.reset();
   }
 
   removeAcceptState(state: DFAState | string) {
@@ -113,7 +115,7 @@ export class DFA {
     this.currentState = this.initialState;
   }
 
-  start() {
+  reset() {
     this.currentIndex = -1;
     this.currentState = this.initialState;
   }

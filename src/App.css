@@ -159,13 +159,13 @@ input {
 }
 
 .state-row {
-  transition: 0.25s linear;
+  transition: 0.25s ease-in-out;
 }
 
 .state-row.dragging {
   background-color: rgba(59, 59, 59, 0.5);
   transform-origin: center;
-  transform: scale(1.01);
+  transform: scale(1.05);
 }
 
 .dfa-designer:not(.dragging) .state-row .drag-btn {
