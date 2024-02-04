@@ -1,10 +1,11 @@
 import { useCallback, useRef } from 'react';
+import { useStateRef } from './useStateRef';
 
 export function useAnimationFrame() {
   const requestRef = useRef<number>(0);
   const delayRef = useRef(100); // 100 ms by default
 
-  const activeRef = useRef(false);
+  const [activeRef, setActive] = useStateRef(false);
   const callbackRef = useRef<(deltaTime: number) => void>();
   const lastCallTimeRef = useRef(0);
 
@@ -27,14 +28,14 @@ export function useAnimationFrame() {
 
   const start = useCallback((delay: number) => {
     delayRef.current = delay;
-    activeRef.current = true;
+    setActive(true);
     requestRef.current = requestAnimationFrame(callback);
   }, []);
 
   const stop = useCallback(() => {
-    activeRef.current = false;
+    setActive(false);
     cancelAnimationFrame(requestRef.current);
   }, []);
 
-  return { set, start, stop };
+  return { set, start, stop, isActive: activeRef.current };
 }

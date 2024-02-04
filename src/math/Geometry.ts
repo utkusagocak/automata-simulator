@@ -57,7 +57,7 @@ export function toRadian(degree: number) {
 }
 
 /**
- * Angle in clockwise
+ * Angle (rad) in clockwise
  * @param point
  * @param center
  * @returns

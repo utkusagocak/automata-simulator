@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { DFA } from '../../Automata/DFA';
+import { DFA } from './DFA';
 import { observer } from 'mobx-react-lite';
-import { createDFAGraph } from '../../Automata/DFAGraph';
+import { createDFAGraph } from './DFAGraph';
 import Node from '../Graph/Node';
 import Edge from '../Graph/Edge';
 import Canvas from '../Canvas/Canvas';

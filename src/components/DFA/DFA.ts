@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { delay } from '../helpers/usefull';
+import { delay } from '../../helpers/usefull';
 
 export type DFATransitionFunction = (currentState: DFAState, input: string) => DFAState;
 export type DFATransitionMatrix = { [key: string]: { [key: string]: string } };
@@ -73,6 +73,7 @@ export class DFA {
   updateState(id: string, name: string) {
     const state = this.states.find((s) => s.id === id);
     if (state) state.name = name;
+    this.states = [...this.states];
   }
 
   removeState(state: DFAState | string) {
@@ -181,6 +182,13 @@ export class DFA {
   isEnd() {
     if (this.currentIndex >= this.input.length - 1) return true;
     return false;
+  }
+
+  isInputValid() {
+    if (this.isEnd()) {
+      if (this.acceptStates.has(this.currentState)) return true;
+      else return false;
+    }
   }
 
   // Validation

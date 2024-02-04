@@ -1,15 +1,13 @@
-import { DFA, DFATransitions } from './Automata/DFA';
-import DFAControls from './components/DFAAnimator/DFAControls';
+import { DFA, DFATransitions } from './components/DFA/DFA';
+import DFAControls from './components/DFA/DFAControls';
 import { useLayoutEffect, useState } from 'react';
-import DFAVisualizer from './components/DFAAnimator/DFAVisualizer';
-import { DFADesigner } from './components/DFAAnimator/DFADesigner';
+import DFAVisualizer from './components/DFA/DFAVisualizer';
+import { DFADesigner } from './components/DFA/DFADesigner';
 
 import './App.css';
 import './Common.css';
 /**
  * TODO:
- *  * DFA Grap is not updating automaticly.
- *  * Automatic animation (start, stop, reset, etc.)
  *  * Animations and cursors for DFAControls
  */
 const states = ['1', '2', '3', '4'];
@@ -59,10 +57,18 @@ function App() {
       <div className="graph-container">
         <DFAVisualizer dfa={dfa} />
       </div>
-      <div className="dfa-controls-container">
+      <div className="right-panel">
+        <div className="panel description-panel">
+          <div className="panel-title">Deterministic Finite State Automata</div>
+          <div className="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum
+          </div>
+        </div>
         <DFAControls dfa={dfa} />
-      </div>
-      <div className="dfa-designer-container">
         <DFADesigner dfa={dfa} />
       </div>
     </div>

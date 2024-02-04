@@ -66,3 +66,23 @@ button {
 input {
   cursor: pointer;
 }
+
+@supports not selector(--webkit--scrollbar) {
+  * {
+    scrollbar-color: gray transparent;
+    scrollbar-width: thin;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  background-color: transparent;
+}
+
+/* Add a thumb */
+*::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(hsl(15deg 100% 50%), hsl(75deg 100% 50%));
+  opacity: 0.3;
+  border-radius: 4px;
+}

@@ -39,14 +39,14 @@
 
   height: 100%;
   display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: auto 1fr 1fr;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr;
   gap: 16px;
   padding: var(--padding);
 }
 
 .graph-container {
-  grid-column: 1 / 3;
+  grid-column: 1 / -1;
   grid-row: 1 / 4;
   z-index: 0;
   position: absolute;
@@ -73,30 +73,23 @@
   */
 }
 
-.dfa-controls-container {
-  grid-column: 2;
+#visible-graph-area {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  pointer-events: none;
+}
+
+.right-panel {
+  grid-column: -2;
   grid-row: 1;
+
+  max-width: 350px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   z-index: 1;
-}
-
-.text-editor {
-  grid-column: 2;
-  grid-row: 2 / 3;
-  z-index: 1;
-
-  border-radius: 4px;
-  box-shadow: 0px 0px 8px 0px white;
-}
-
-.dfa-designer-container {
-  grid-column: 2;
-  grid-row: 2 / 4;
-  z-index: 1;
-}
-
-.text-editor textarea {
-  width: 100%;
-  height: 100%;
+  overflow: auto;
 }
 
 textarea,
@@ -123,12 +116,13 @@ input {
 .dfa-controls-input-container {
   position: relative;
   font-size: 1.25rem;
-  min-height: 1.5rem;
+  height: calc(1.5rem + 1.25rem);
+  padding-bottom: 1.25rem;
 }
 
 .dfa-controls-input-container input {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto 0;
   text-align: center;
   vertical-align: middle;
   letter-spacing: 1ch;
@@ -138,6 +132,7 @@ input {
   background-color: transparent;
   color: transparent;
   caret-color: white;
+  height: 1.5rem;
 }
 
 .dfa-controls-input-container input:focus,
@@ -147,16 +142,9 @@ input {
   /* box-shadow: inset 0px -3px 0px -1px rgba(255, 255, 255, 0.5); */
 }
 
-.dfa-controls-input-container div {
+.dfa-controls-input-container .dfa-controls-input-letter {
   width: 1ch;
   margin-right: 1ch;
-}
-
-#visible-graph-area {
-  grid-column: 1;
-  grid-row: 1 / 4;
-  pointer-events: none;
-  /* border: 1px solid red; */
 }
 
 .cursor-pointer {
@@ -169,8 +157,9 @@ input {
 
 .state-row.dragging {
   background-color: rgba(59, 59, 59, 0.5);
+  box-shadow: 0px 0px 4px 4px rgba(59, 59, 59, 0.5);
   transform-origin: center;
-  transform: scale(1.05);
+  transform: scale(1.005);
 }
 
 .dfa-designer:not(.dragging) .state-row .drag-btn {
@@ -183,4 +172,54 @@ input {
 
 .dfa-designer.dragging .state-row * {
   pointer-events: none;
+}
+
+.dfa-designer-transition-input:invalid {
+  background-color: red;
+}
+
+.panel {
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(9px);
+  border-radius: 4px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  padding: 4px 4px;
+  justify-content: center;
+}
+
+.panel-title:not(:last-child) {
+  margin-bottom: 8px;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(126, 126, 126, 0.3);
+}
+
+.description-panel {
+  display: flex;
+  flex-direction: column;
+
+  transition: 0.25s;
+  height: calc(1.5rem + 4px * 2 + 8px * 2);
+
+  overflow-y: hidden;
+}
+
+.description-panel:not(:hover) .panel-title {
+  border-bottom-color: transparent;
+  /* margin-bottom: unset; */
+}
+
+.description-panel .description {
+  padding: 4px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.description-panel:hover {
+  height: 300px;
 }
