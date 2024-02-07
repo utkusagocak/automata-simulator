@@ -24,8 +24,8 @@ defineExpose({ controls: canvas, grap: graph });
         :As="Path"
         :d="edge.arrow"
         :style="{
-          fill: 'orange',
-          stroke: 'orange',
+          stroke: edge.isActive ? 'red' : 'orange',
+          fill: edge.isActive ? 'red' : 'orange',
           strokeWidth: 0.5,
           zIndex: 0,
         }"
@@ -34,7 +34,7 @@ defineExpose({ controls: canvas, grap: graph });
         :As="Path"
         :d="edge.arc"
         :style="{
-          stroke: 'orange',
+          stroke: edge.isActive ? 'red' : 'orange',
           fill: 'transparent',
           zIndex: 0,
         }"
@@ -62,7 +62,7 @@ defineExpose({ controls: canvas, grap: graph });
         :cx="node.x"
         :cy="node.y"
         :r="20"
-        :style="{ fill: 'orange', stroke: 'orange', zIndex: 1 }"
+        :style="{ fill: node.isActive ? 'red' : 'orange', stroke: 'orange', zIndex: 1 }"
       />
       <Node
         :As="Text"

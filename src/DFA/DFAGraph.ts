@@ -5,6 +5,7 @@ export interface DFANode {
   state: DFAState;
   isStart: boolean;
   isAccept: boolean;
+  isActive?: boolean;
 
   // Layout
   x: number;
@@ -15,6 +16,7 @@ export interface DFAEdge {
   from: string;
   to: string;
   conditions: string[];
+  isActive?: boolean;
 
   // Layout
   arc: string;
@@ -46,6 +48,7 @@ export function createDFAGraph(dfa: DFA): DFAGraph {
       y: lastY,
       isStart: dfa.initialState === state.id,
       isAccept: dfa.acceptStates.has(state.id),
+      isActive: dfa.currentState === state.id,
     };
     lastX += 100;
   }
@@ -70,6 +73,10 @@ export function createDFAGraph(dfa: DFA): DFAGraph {
     const edge = edges[key];
     edges[key] = {
       ...edge,
+      isActive:
+        dfa.inTransition &&
+        dfa.currentState === edge.from &&
+        edge.conditions.includes(dfa.input[dfa.currentIndex]),
       ...calculateEdge(nodes[edge.from], nodes[edge.to]),
     };
   }

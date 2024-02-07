@@ -5,10 +5,34 @@ import {
   LucideChevronsRight,
   LucidePlay,
   LucideSquare,
+  LucideStopCircle,
 } from 'lucide-vue-next';
 import { DFA } from './DFA';
+import { ref } from 'vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
+
+const started = ref(false);
+let timer = -1;
+
+function handleStart() {
+  started.value = true;
+  clearInterval(timer);
+
+  const run = async () => {
+    clearTimeout(timer);
+    await dfa.nextAsync(500);
+    if (started.value && !dfa.isEnd()) timer = setTimeout(run, 500);
+    else started.value = false;
+  };
+
+  run();
+}
+
+function handleStop() {
+  started.value = false;
+  clearTimeout(timer);
+}
 </script>
 
 <template>
@@ -84,13 +108,19 @@ const { dfa } = defineProps<{ dfa: DFA }>();
           class="icon-btn"
           @click="
             (e) => {
-              if (dfa.isEnd()) {
-                dfa.reset();
+              if (started) {
+                handleStop();
+              } else {
+                if (dfa.isEnd()) {
+                  dfa.reset();
+                }
+                handleStart();
               }
             }
           "
         >
-          <LucidePlay />
+          <LucidePlay v-if="!started" />
+          <LucideStopCircle v-if="started" />
         </button>
         <button class="icon-btn" @click="(e) => dfa.reset()" :disabled="dfa.currentIndex === -1">
           <LucideSquare />
@@ -98,7 +128,7 @@ const { dfa } = defineProps<{ dfa: DFA }>();
         <button
           class="icon-btn"
           @click="(e) => !dfa.inTransition && dfa.nextAsync()"
-          :disabled="dfa.inTransition || dfa.isEnd()"
+          :disabled="dfa.inTransition || dfa.isEnd() || started"
         >
           <LucideChevronsRight />
         </button>
