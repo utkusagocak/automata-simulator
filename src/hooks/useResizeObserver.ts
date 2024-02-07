@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from 'react';
+import { Ref, onMounted, ref, watch } from 'vue';
 
 interface ResizeObserverCallbackParams {
   width: number;
@@ -7,38 +7,35 @@ interface ResizeObserverCallbackParams {
 
 type ResizeObserverCallback = (cb: ResizeObserverCallbackParams) => void;
 
-export function useResizeObserver<T extends Element>(cb: ResizeObserverCallback, element: RefObject<T>) {
-  const observer = useRef<ResizeObserver | null>(null);
-  const current = element && element.current;
+export function useResizeObserver<T extends HTMLElement>(
+  cb: ResizeObserverCallback,
+  element: Ref<T | undefined>,
+) {
+  const observer = ref<ResizeObserver | null>(null);
 
-  const callback = useRef(cb);
-  useEffect(() => {
-    callback.current = cb;
-  });
-
-  useEffect(() => {
-    if (observer && observer.current && current) {
-      observer.current.unobserve(current);
+  watch(element, (current, old) => {
+    if (observer && observer.value && element && old) {
+      observer.value.unobserve(old);
     }
 
-    observer.current = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      const { width, height } = entry.contentRect;
-      callback.current({ width, height } as ResizeObserverCallbackParams);
-    });
-
-    observe();
-
-    return () => {
-      if (observer && observer.current && element && current) {
-        observer.current.unobserve(current);
+    if (current) {
+      if (observer && observer.value && current) {
+        observer.value.unobserve(current);
       }
-    };
-  }, [current]);
+
+      observer.value = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        const { width, height } = entry.contentRect;
+        cb({ width, height } as ResizeObserverCallbackParams);
+      });
+
+      observe();
+    }
+  });
 
   const observe = () => {
-    if (element && element.current && observer.current) {
-      observer.current.observe(element.current);
+    if (element && element.value && observer.value) {
+      observer.value.observe(element.value);
     }
   };
 }

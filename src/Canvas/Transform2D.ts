@@ -1,5 +1,4 @@
 import { vec2, mat3 } from 'gl-matrix';
-import { action, makeObservable, observable } from 'mobx';
 
 export class Transform2D {
   private _scaling: vec2 = vec2.fromValues(1, 1);
@@ -8,12 +7,7 @@ export class Transform2D {
 
   matrix: mat3 = mat3.create();
 
-  constructor() {
-    makeObservable(this, {
-      matrix: observable,
-      reCalculateTransform: action,
-    });
-  }
+  constructor() {}
 
   get scaling() {
     return this._scaling;
@@ -61,7 +55,10 @@ export class Transform2D {
 
   zoomTo(point: vec2, zoomFactor: number) {
     const result = vec2.create();
-    const offset = vec2.multiply(result, vec2.multiply(result, point, this._scaling), [1 - zoomFactor, 1 - zoomFactor]);
+    const offset = vec2.multiply(result, vec2.multiply(result, point, this._scaling), [
+      1 - zoomFactor,
+      1 - zoomFactor,
+    ]);
 
     this._scaling[0] *= zoomFactor;
     this._scaling[1] *= zoomFactor;
@@ -93,6 +90,13 @@ export class Transform2D {
   }
 
   get canvasTransform(): [number, number, number, number, number, number] {
-    return [this.matrix[0], this.matrix[1], this.matrix[3], this.matrix[4], this.matrix[6], this.matrix[7]];
+    return [
+      this.matrix[0],
+      this.matrix[1],
+      this.matrix[3],
+      this.matrix[4],
+      this.matrix[6],
+      this.matrix[7],
+    ];
   }
 }

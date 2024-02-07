@@ -1,6 +1,11 @@
-import { Geometry } from '../../math';
-import { LocalTransform } from './Nodes/TransformNode';
+import { Geometry } from '../math';
 import { Renderer } from './Renderer';
+
+export interface LocalTransform {
+  scale: number;
+  translation: [number, number];
+  rotation: number;
+}
 
 export interface Style {
   zIndex?: number;
@@ -45,12 +50,22 @@ export abstract class Shape implements Interactable {
 }
 
 export class Rectangle extends Shape {
-  constructor(public x: number, public y: number, public width: number, public height: number) {
+  public x: number = 0;
+  public y: number = 0;
+  public width: number = 0;
+  public height: number = 0;
+
+  constructor() {
     super();
   }
 
   isInside(point: Geometry.Point) {
-    if (point.x >= this.x && point.x <= this.x + this.width && point.y >= this.y && point.y <= this.y + this.width) {
+    if (
+      point.x >= this.x &&
+      point.x <= this.x + this.width &&
+      point.y >= this.y &&
+      point.y <= this.y + this.width
+    ) {
       return true;
     }
     return false;
@@ -80,7 +95,9 @@ export class Rectangle extends Shape {
 }
 
 export class Path extends Shape {
-  constructor(public d: string) {
+  public d: string = '';
+
+  constructor() {
     super();
   }
 
@@ -107,7 +124,11 @@ export class Path extends Shape {
 }
 
 export class Circle extends Shape {
-  constructor(public cx: number, public cy: number, public r: number) {
+  public cx: number = 0;
+  public cy: number = 0;
+  public r: number = 0;
+
+  constructor() {
     super();
   }
 
@@ -146,12 +167,22 @@ export class Circle extends Shape {
 }
 
 export class Text extends Shape {
-  constructor(public x: number, public y: number, public width: number, public textContent: string) {
+  public x: number = 0;
+  public y: number = 0;
+  public width: number = 0;
+  public textContent: string = '';
+
+  constructor() {
     super();
   }
 
   isInside(point: Geometry.Point) {
-    if (point.x >= this.x && point.x <= this.x + this.width && point.y >= this.y && point.y <= this.y + this.width) {
+    if (
+      point.x >= this.x &&
+      point.x <= this.x + this.width &&
+      point.y >= this.y &&
+      point.y <= this.y + this.width
+    ) {
       return true;
     }
     return false;

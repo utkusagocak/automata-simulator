@@ -1,7 +1,4 @@
-import type { RefObject } from 'react';
-import { useCallback } from 'react';
-import { useRef, useEffect } from 'react';
-import { useStateRef } from './useStateRef';
+import { Ref, onMounted, onUnmounted, ref, watch } from 'vue';
 
 type UseDragOptions = {
   onDrag?: (event: PointerEvent) => void;
@@ -9,63 +6,60 @@ type UseDragOptions = {
   onDrop?: (event: PointerEvent) => void;
 };
 
-export function useDrag(ref: RefObject<HTMLElement>, options: UseDragOptions = {}) {
-  const [isDragging, setIsDragging] = useStateRef<boolean>(false);
+export function useDrag(element: Ref<HTMLElement | undefined>, options: UseDragOptions = {}) {
+  const isDragging = ref(false);
 
-  const optionsRef = useRef<UseDragOptions>(options);
-  optionsRef.current = options;
+  const handlePointerDown = (event: PointerEvent) => {
+    if (isDragging.value === true) return;
 
-  const handlePointerDown = useCallback((event: PointerEvent) => {
-    if (isDragging.current === true) return;
-
-    setIsDragging(true);
+    isDragging.value = true;
 
     const handlePointerMove = (event: PointerEvent) => {
-      if (isDragging.current) {
-        optionsRef.current.onDrag?.(event);
+      if (isDragging.value) {
+        options.onDrag?.(event);
         event.preventDefault();
       }
     };
 
     const handlePointerUp = (event: PointerEvent) => {
-      optionsRef.current.onDrop?.(event);
+      options.onDrop?.(event);
       document.removeEventListener('pointerup', handlePointerUp);
       document.removeEventListener('pointermove', handlePointerMove);
 
-      setIsDragging(false);
+      isDragging.value = false;
     };
 
-    const result = optionsRef.current.onStartDrag?.(event);
+    const result = options.onStartDrag?.(event);
     if (result !== false) {
       document.addEventListener('pointerup', handlePointerUp);
       document.addEventListener('pointermove', handlePointerMove);
     }
     event.preventDefault();
-  }, []);
+  };
 
-  const handleTouchStart = useCallback((event: TouchEvent) => {
+  const handleTouchStart = (event: TouchEvent) => {
     event.preventDefault();
-  }, []);
+  };
 
-  useEffect(() => {
-    if (!ref) return;
+  watch(element, (element, oldElement) => {
+    if (oldElement) {
+      oldElement.removeEventListener('pointerdown', handlePointerDown);
+      oldElement.removeEventListener('touchstart', handleTouchStart);
+    }
 
-    const element = ref.current;
     if (element) {
       element?.setAttribute('draggable', 'false');
       element.addEventListener('pointerdown', handlePointerDown);
       element.addEventListener('touchstart', handleTouchStart);
-
-      return () => {
-        element.removeEventListener('pointerdown', handlePointerDown);
-        element.removeEventListener('touchstart', handleTouchStart);
-      };
     }
+  });
 
-    return () => {
-      return;
-    };
-  }, [ref.current]);
+  onUnmounted(() => {
+    if (element.value) {
+      element.value.removeEventListener('pointerdown', handlePointerDown);
+      element.value.removeEventListener('touchstart', handleTouchStart);
+    }
+  });
 
-  return { isDragging: isDragging.current };
+  return { isDragging: isDragging.value };
 }

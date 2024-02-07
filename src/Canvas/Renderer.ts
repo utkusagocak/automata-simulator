@@ -1,4 +1,4 @@
-import { Geometry } from '../../math';
+import { Geometry } from '../math';
 import { Shape } from './Shapes';
 import { Transform2D } from './Transform2D';
 
@@ -8,7 +8,15 @@ export class Renderer {
 
   elements: Shape[] = [];
   boundingBox: Geometry.Rectangle = { x: 0, y: 0, width: 0, height: 0 };
+
   transform: Transform2D = new Transform2D();
+
+  width: number = 1;
+  height: number = 1;
+
+  get center() {
+    return { x: this.width * 0.5, y: this.height * 0.5 };
+  }
 
   constructor(canvas?: HTMLCanvasElement) {
     if (canvas) this.setCanvas(canvas);
@@ -24,6 +32,9 @@ export class Renderer {
 
   setCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+
     const context = canvas.getContext('2d');
     if (context === null) throw new Error('2d context not initialized.');
     this.context = context;
@@ -32,6 +43,17 @@ export class Renderer {
     this.canvas.addEventListener('pointerdown', this);
     this.canvas.addEventListener('pointerup', this);
     this.canvas.addEventListener('pointermove', this);
+  }
+
+  setSize(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+
+    if (this.canvas) {
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+      this.draw();
+    }
   }
 
   clear() {
@@ -44,11 +66,20 @@ export class Renderer {
   draw() {
     this.clear();
 
+    this.context.save();
+
+    if (this.transform) {
+      this.context.resetTransform();
+      this.context.transform(...this.transform.canvasTransform);
+    }
+
     this.elements.sort((a, b) => (a?.style?.zIndex ?? 0) - (b?.style?.zIndex ?? 0));
     this.boundingBox = { x: 0, y: 0, width: 0, height: 0 };
     for (const element of this.elements) {
       element.draw(this);
     }
+
+    this.context.restore();
   }
 
   fitContentToView(viewPort?: Geometry.Rectangle) {

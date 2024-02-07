@@ -1,5 +1,6 @@
-import { makeAutoObservable, runInAction } from 'mobx';
-import { delay } from '../../helpers/usefull';
+function delay(delay = 100) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+}
 
 export type DFATransitionFunction = (currentState: DFAState, input: string) => DFAState;
 export type DFATransitionMatrix = { [key: string]: { [key: string]: string } };
@@ -48,9 +49,7 @@ export class DFA {
   public currentState: DFAStateId = this.initialState;
   public inTransition: boolean = false;
 
-  constructor() {
-    makeAutoObservable(this);
-  }
+  constructor() {}
 
   // Update DFA
   getStateFromId(id: string) {
@@ -136,10 +135,9 @@ export class DFA {
 
   async nextAsync(stepDelay: number = 500) {
     if (!this.isEnd()) {
-      runInAction(() => {
-        this.inTransition = true;
-        this.nextInput();
-      });
+      this.inTransition = true;
+      this.nextInput();
+
       await delay(stepDelay);
 
       const nextState = this.nextState(this.currentState, this.input[this.currentIndex]);
@@ -148,10 +146,10 @@ export class DFA {
         condition: this.currentIndex,
         to: nextState,
       };
-      runInAction(() => {
-        this.inTransition = false;
-        this.currentState = nextState;
-      });
+
+      this.inTransition = false;
+      this.currentState = nextState;
+
       return action;
     }
     return { from: this.currentState, condition: this.currentIndex, to: this.currentState };

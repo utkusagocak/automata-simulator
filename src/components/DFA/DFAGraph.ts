@@ -1,8 +1,40 @@
+import { Geometry } from '../../math';
 import { DFA, DFAState } from './DFA';
 
-export function createDFAGraph(dfa: DFA) {
-  const nodes: { [key: string]: any } = {};
-  const edges: { [key: string]: any } = {};
+export interface DFANode {
+  state: DFAState;
+  isStart: boolean;
+  isAccept: boolean;
+
+  // Layout
+  x: number;
+  y: number;
+}
+
+export interface DFAEdge {
+  from: string;
+  to: string;
+  conditions: string[];
+
+  // Layout
+  arc: string;
+  arrow: string;
+  text: {
+    x: number;
+    y: number;
+  };
+}
+
+export interface DFAGraph {
+  nodes: {
+    [id: string]: DFANode;
+  };
+  edges: { [key: string]: DFAEdge };
+}
+
+export function createDFAGraph(dfa: DFA): DFAGraph {
+  const nodes: DFAGraph['nodes'] = {};
+  const edges: DFAGraph['edges'] = {};
   // if (!DFA.isDFAValid(dfa)) return { nodes, edges };
 
   const lastY = 0;
@@ -25,6 +57,7 @@ export function createDFAGraph(dfa: DFA) {
 
       if (nextStateId && nodes[state.id] && nodes[nextStateId]) {
         if (!edges[key]) {
+          // @ts-ignore
           edges[key] = { from: state.id, to: nextStateId, conditions: [] };
         }
 
@@ -33,5 +66,75 @@ export function createDFAGraph(dfa: DFA) {
     }
   }
 
+  for (const key in edges) {
+    const edge = edges[key];
+    edges[key] = {
+      ...edge,
+      ...calculateEdge(nodes[edge.from], nodes[edge.to]),
+    };
+  }
+
   return { nodes, edges };
+}
+
+function calculateEdge(from: DFANode, to: DFANode) {
+  // TODO
+  const radius = from.x === to.x ? 20 : Math.abs(from.x - to.x) / 2;
+  const fromX = from.state === to.state ? from.x - 10 : from.x;
+  const fromY = from.state === to.state ? from.y + 10 : from.y;
+  const toX = from.state === to.state ? to.x - 10 : to.x;
+  const toY = from.state === to.state ? to.y - 10 : to.y;
+
+  const point1 = { x: fromX, y: fromY };
+  const point2 = { x: toX, y: toY };
+  const intersections = Geometry.getIntersectionOf2Circles(
+    { c: point1, r: radius },
+    { c: point2, r: radius },
+  );
+  if (intersections === null) throw new Error('getCenterPoint: No circle.');
+
+  const center = intersections[0];
+  const midpoint = Geometry.getMidPointOfArc(center, point1, point2);
+
+  const intersectionsDest = Geometry.getIntersectionOf2Circles(
+    { c: { x: to.x, y: to.y }, r: 20 },
+    { c: center, r: radius },
+  );
+  if (intersectionsDest === null) throw new Error('getCenterPoint: No circle.');
+
+  const p1 = Geometry.toPolar(point1, center);
+  const p2 = Geometry.toPolar(point2, center);
+  const angle1 = Geometry.angleBetween(center, intersectionsDest[0]);
+  const angle2 = Geometry.angleBetween(center, intersectionsDest[1]);
+
+  const arrowDest = angle1 > p1.t && angle1 < p2.t ? intersectionsDest[0] : intersectionsDest[1];
+  const angle = angle1 > p1.t && angle1 < p2.t ? angle1 : angle2;
+
+  const midAngle = Math.max(
+    Geometry.angleBetween(center, midpoint),
+    2 * Math.PI - Geometry.angleBetween(center, midpoint),
+  );
+  const d = Geometry.fromPolar({
+    r: radius,
+    t:
+      angle > midAngle
+        ? angle + Geometry.toRadian(3 / radius)
+        : angle - Geometry.toRadian(3 / radius),
+  });
+  const dt = { x: d.x + center.x, y: d.y + center.y };
+  const startAngle = Geometry.angleBetween(arrowDest, dt);
+
+  const arrow2P = Geometry.fromPolar({ r: 5, t: startAngle - Geometry.toRadian(30) });
+  const arrow2 = { x: arrow2P.x + arrowDest.x, y: arrow2P.y + arrowDest.y };
+  const arrow3P = Geometry.fromPolar({ r: 5, t: startAngle + Geometry.toRadian(30) });
+  const arrow3 = { x: arrow3P.x + arrowDest.x, y: arrow3P.y + arrowDest.y };
+
+  return {
+    arc: `M ${fromX} ${fromY} A ${radius} ${radius} ${0} ${1} ${1} ${toX} ${toY}`,
+    arrow: `M ${arrowDest.x} ${arrowDest.y} L ${arrow2.x} ${arrow2.y} L ${arrow3.x} ${arrow3.y} z`,
+    text: {
+      x: midpoint.x,
+      y: midpoint.y,
+    },
+  };
 }
