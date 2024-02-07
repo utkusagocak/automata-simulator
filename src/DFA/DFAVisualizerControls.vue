@@ -20,7 +20,6 @@ const { visualizer } = defineProps<{
           @click="
             () => {
               if (visualizer) {
-                console.log('fit-to-view 1', visualizer.controls?.fitToView());
                 visualizer.controls?.fitToView();
               }
             }

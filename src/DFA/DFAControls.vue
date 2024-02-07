@@ -3,9 +3,9 @@ import {
   LucideChevronDown,
   LucideChevronUp,
   LucideChevronsRight,
+  LucidePause,
   LucidePlay,
   LucideSquare,
-  LucideStopCircle,
 } from 'lucide-vue-next';
 import { DFA } from './DFA';
 import { ref } from 'vue';
@@ -120,7 +120,7 @@ function handleStop() {
           "
         >
           <LucidePlay v-if="!started" />
-          <LucideStopCircle v-if="started" />
+          <LucidePause v-if="started" />
         </button>
         <button class="icon-btn" @click="(e) => dfa.reset()" :disabled="dfa.currentIndex === -1">
           <LucideSquare />

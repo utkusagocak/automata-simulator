@@ -192,6 +192,7 @@ input {
 
   min-height: 0;
   max-width: 100%;
+  overflow: hidden;
 
   flex-shrink: 0;
 }
@@ -216,7 +217,8 @@ input {
 }
 
 .dfa-designer {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .dfa-designer-panel {

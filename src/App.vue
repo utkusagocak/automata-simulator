@@ -49,6 +49,13 @@ onMounted(() => {
       }
     }
   }
+
+  // @ts-ignore
+  dfa.setInitialState(dfa.states.find((s) => s.name === '1'));
+  // @ts-ignore
+  dfa.addAcceptState(dfa.states.find((s) => s.name === '4'));
+
+  dfa.setInput('bababa');
 });
 </script>
 
