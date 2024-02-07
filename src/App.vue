@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { reactive, onMounted, ref, shallowRef } from 'vue';
-import { DFA, DFATransitions } from './components/DFA/DFA';
+import { DFA, DFATransitions } from './DFA/DFA';
 
 import './App.css';
 import './Common.css';
 
-import DFADesigner from './components/DFADesigner.vue';
-import DFAControls from './components/DFAControls.vue';
-import DFAVisualizer from './components/DFAVisualizer.vue';
+import DFADesigner from './DFA/DFADesigner.vue';
+import DFAControls from './DFA/DFAControls.vue';
+import DFAVisualizer from './DFA/DFAVisualizer.vue';
 import { Geometry } from './math';
+import DFAVisualizerControls from './DFA/DFAVisualizerControls.vue';
 
 const states = ['1', '2', '3', '4'];
 const alphabet = 'ab';
@@ -32,6 +33,7 @@ const transitions: DFATransitions = {
 };
 
 const dfa = reactive(new DFA());
+const visualizer = ref<InstanceType<typeof DFAVisualizer> | null>(null);
 
 onMounted(() => {
   for (const name of states) {
@@ -53,26 +55,20 @@ onMounted(() => {
 <template>
   <div class="main">
     <div className="graph-container">
-      <DFAVisualizer :dfa="dfa" />
+      <DFAVisualizer ref="visualizer" :dfa="dfa" />
     </div>
 
     <div class="right-panel">
       <div className="panel description-panel">
         <div className="panel-title">Deterministic Finite State Automata</div>
-        <div className="description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-          sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-          est laborum
-        </div>
       </div>
 
       <DFAControls :dfa="dfa" />
+      <DFAVisualizerControls :visualizer="visualizer" />
       <DFADesigner :dfa="dfa" />
     </div>
   </div>
 </template>
 
 <style scoped></style>
+./DFA/DFA

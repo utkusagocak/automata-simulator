@@ -27,9 +27,9 @@ function fitToView(rect?: Geometry.Rectangle) {
     if (!containerRef.value) return;
     const canvasRect = containerRef.value.getBoundingClientRect();
     rect = {
-      x: canvasRect.x,
+      x: canvasRect.x + 30,
       y: canvasRect.y,
-      width: canvasRect.width - 300,
+      width: canvasRect.width - 340,
       height: canvasRect.height,
     };
   }

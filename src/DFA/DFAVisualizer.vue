@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { DFA } from './DFA/DFA';
-import { createDFAGraph } from './DFA/DFAGraph';
+import { computed, ref } from 'vue';
+import { DFA } from './DFA';
+import { createDFAGraph } from './DFAGraph';
 import Canvas from '../Canvas/Canvas.vue';
 import Node from '../Canvas/Node.vue';
 import { Circle, Path, Text } from '../Canvas/Shapes';
-import { Geometry } from '../math';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
 const graph = computed(() => {
   return createDFAGraph(dfa);
 });
+
+const canvas = ref<InstanceType<typeof Canvas>>();
+defineExpose({ controls: canvas, grap: graph });
 </script>
 
 <!-- Graph -->
 <template>
-  <Canvas id="dfa-graph-canvas">
+  <Canvas ref="canvas" id="dfa-graph-canvas">
     <!-- Graph.Edge -->
     <template v-for="(edge, key, index) in graph.edges" :key="edge">
       <Node

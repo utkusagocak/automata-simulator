@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LucideGripVertical, LucidePlus, LucideTrash } from 'lucide-vue-next';
-import { DFA } from './DFA/DFA';
+import { DFA } from './DFA';
 import { ref } from 'vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
@@ -33,10 +33,10 @@ function handleStartDrag(e: PointerEvent, target: string) {
 </script>
 
 <template>
-  <div class="panel">
+  <div class="panel dfa-designer-panel">
     <div class="panel-title">DFA Designer</div>
     <div
-      class="dfa-designer"
+      class="panel-content dfa-designer"
       :class="{ dragging: drag.dragging }"
       :style="{
         display: 'grid',
@@ -264,3 +264,4 @@ function handleStartDrag(e: PointerEvent, target: string) {
 </template>
 
 <style scoped></style>
+../DFA/DFA

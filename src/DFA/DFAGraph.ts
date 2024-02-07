@@ -1,4 +1,4 @@
-import { Geometry } from '../../math';
+import { Geometry } from '../math';
 import { DFA, DFAState } from './DFA';
 
 export interface DFANode {

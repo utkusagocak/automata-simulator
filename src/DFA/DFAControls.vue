@@ -6,7 +6,7 @@ import {
   LucidePlay,
   LucideSquare,
 } from 'lucide-vue-next';
-import { DFA } from './DFA/DFA';
+import { DFA } from './DFA';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
 </script>
@@ -16,7 +16,7 @@ const { dfa } = defineProps<{ dfa: DFA }>();
     <div className="panel-title">DFA Controls</div>
 
     <div
-      class="dfa-controls d-flex flex-column align-items-center gap-1"
+      class="panel-content dfa-controls d-flex flex-column align-items-center gap-1"
       :class="{ disabled: !DFA.isDFAValid(dfa) }"
     >
       <div
@@ -118,3 +118,4 @@ const { dfa } = defineProps<{ dfa: DFA }>();
   transition: transform 0.2s linear;
 }
 </style>
+../DFA/DFA
