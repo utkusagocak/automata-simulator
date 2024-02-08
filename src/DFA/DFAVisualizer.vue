@@ -19,7 +19,7 @@ defineExpose({ controls: canvas, grap: graph });
 <template>
   <Canvas ref="canvas" id="dfa-graph-canvas">
     <!-- Graph.Edge -->
-    <template v-for="(edge, key, index) in graph.edges" :key="edge">
+    <template v-for="(edge, key, index) in graph.edges" :key="key">
       <Node
         :As="Path"
         :d="edge.arrow"
@@ -56,7 +56,7 @@ defineExpose({ controls: canvas, grap: graph });
       />
     </template>
     <!-- Graph.Node -->
-    <template v-for="(node, key, index) in graph.nodes" :key="node">
+    <template v-for="(node, key, index) in graph.nodes" :key="key">
       <Node
         :As="Circle"
         :cx="node.x"

@@ -61,7 +61,7 @@
 
   --scale: 1.5;
   box-shadow: inset 0px 0px calc(var(--padding) * var(--scale)) calc(var(--padding) * var(--scale))
-    #242424;
+    var(--page-bg);
 
   /* Blured border or padding */
   /*   

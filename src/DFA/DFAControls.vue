@@ -122,7 +122,16 @@ function handleStop() {
           <LucidePlay v-if="!started" />
           <LucidePause v-if="started" />
         </button>
-        <button class="icon-btn" @click="(e) => dfa.reset()" :disabled="dfa.currentIndex === -1">
+        <button
+          class="icon-btn"
+          @click="
+            (e) => {
+              handleStop();
+              dfa.reset();
+            }
+          "
+          :disabled="dfa.currentIndex === -1"
+        >
           <LucideSquare />
         </button>
         <button

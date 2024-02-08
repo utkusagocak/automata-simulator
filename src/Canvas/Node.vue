@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, onUpdated } from 'vue';
+import { inject, onMounted, onUnmounted, onUpdated, watch } from 'vue';
 import { Renderer } from './Renderer';
 import { Interactable, Style, Circle, Text, Rectangle, Path } from './Shapes';
 
@@ -22,7 +22,8 @@ interface Props extends Interactable {
   textContent?: string;
 }
 
-const { As, style = {}, ...props } = defineProps<Props>();
+const props = defineProps<Props>();
+const { As } = props;
 
 const renderer = inject<Renderer>('renderer');
 const draw = inject<() => void>('draw');
@@ -31,14 +32,17 @@ const element = new As();
 function updatElement() {
   for (const key in props) {
     // @ts-ignore
-    element[key] = props[key];
+    if (key !== 'As' || key !== 'style') {
+      // @ts-ignore
+      element[key] = props[key];
+    }
   }
   element.style = {
     fill: 'transparent',
     font: '16px monospace',
     textAlign: 'center',
     textBaseline: 'middle',
-    ...style,
+    ...props.style,
   };
   draw?.();
 }
@@ -46,6 +50,8 @@ function updatElement() {
 onUpdated(() => {
   updatElement();
 });
+
+watch(() => props, updatElement, { deep: true, immediate: true });
 
 onMounted(() => {
   if (renderer) {
@@ -57,6 +63,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (renderer) {
     renderer.removeElement(element);
+    renderer.draw();
   }
 });
 </script>
