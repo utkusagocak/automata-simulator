@@ -11,11 +11,12 @@ const { dfa } = defineProps<{ dfa: DFA }>();
 //   return createDFAGraph(dfa);
 // });
 
-const graph = ref<DFAGraph>({ nodes: {}, edges: {} });
+const graph = ref<DFAGraph>(new DFAGraph());
 watch(
   () => dfa,
   (dfa) => {
-    graph.value = createDFAGraph(dfa);
+    // graph.value = createDFAGraph(dfa);
+    graph.value.updateGraph(dfa);
   },
   { deep: true },
 );
@@ -29,10 +30,15 @@ defineExpose({ controls: canvas, grap: graph });
   <Canvas ref="canvas" id="dfa-graph-canvas">
     <!-- Graph.Edge -->
     <template>
-      <GraphEdge v-for="(edge, key, index) in graph.edges" :key="key" v-model="graph.edges[key]" />
+      <GraphEdge v-for="(edge, key, index) in graph.edges" :key="key" :edge="edge" :graph="graph" />
     </template>
     <!-- Graph.Node -->
-    <GraphNode v-for="(node, key, index) in graph.nodes" :key="key" v-model="graph.nodes[key]" />
+    <GraphNode
+      v-for="(node, key, index) in graph.nodes"
+      :key="key"
+      v-model="graph.nodes[key]"
+      :graph="graph"
+    />
   </Canvas>
 </template>
 

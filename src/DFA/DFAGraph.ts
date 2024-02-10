@@ -3,8 +3,8 @@ import { DFA, DFAState } from './DFA';
 
 export interface DFANode {
   state: DFAState;
-  isStart: boolean;
-  isAccept: boolean;
+  isStart?: boolean;
+  isAccept?: boolean;
   isActive?: boolean;
 
   // Layout
@@ -27,6 +27,90 @@ export interface DFAEdge {
   };
 }
 
+export class DFAGraph {
+  nodes: {
+    [id: string]: DFANode;
+  } = {};
+  edges: { [key: string]: DFAEdge } = {};
+
+  constructor() {}
+
+  getEdgeWithLayout(edge: DFAEdge) {
+    return calculateEdge(this.nodes[edge.from], this.nodes[edge.to]);
+  }
+
+  updateGraph(dfa: DFA) {
+    // Remove nodes of removed states
+    const newNodes: { [id: string]: boolean } = {};
+    for (const state of dfa.states) {
+      newNodes[state.id] = true;
+    }
+    for (const id in this.nodes) {
+      if (!newNodes[id]) delete this.nodes[id];
+    }
+
+    // Add new nodes
+    let lastX = 0;
+    for (const state of dfa.states) {
+      if (!this.nodes[state.id]) {
+        this.nodes[state.id] = {
+          state: state,
+          x: lastX + 100,
+          y: 0,
+        };
+      }
+
+      lastX = this.nodes[state.id].x;
+    }
+
+    // Update nodes
+    for (const state of dfa.states) {
+      this.nodes[state.id].isStart = dfa.initialState === state.id;
+      this.nodes[state.id].isAccept = dfa.acceptStates.has(state.id);
+      this.nodes[state.id].isActive = dfa.currentState === state.id;
+    }
+
+    const newEdges: { [id: string]: boolean } = {};
+    for (const id in this.edges) {
+      this.edges[id].conditions = [];
+    }
+
+    for (const state of dfa.states) {
+      for (const letter of dfa.alphabet) {
+        const nextStateId = dfa.nextState(state.id, letter);
+        const key = `${state.id}-${nextStateId}`;
+
+        if (nextStateId && this.nodes[state.id] && this.nodes[nextStateId]) {
+          if (!this.edges[key]) {
+            // @ts-ignore
+            this.edges[key] = { from: state.id, to: nextStateId, conditions: [] };
+          }
+
+          this.edges[key].conditions.push(letter);
+          newEdges[key] = true;
+        }
+      }
+    }
+
+    // Remove edges
+    for (const id in this.edges) {
+      if (!newEdges[id]) delete this.edges[id];
+    }
+
+    for (const key in this.edges) {
+      const edge = this.edges[key];
+      this.edges[key] = {
+        ...edge,
+        isActive:
+          dfa.inTransition &&
+          dfa.currentState === edge.from &&
+          edge.conditions.includes(dfa.input[dfa.currentIndex]),
+        ...calculateEdge(this.nodes[edge.from], this.nodes[edge.to]),
+      };
+    }
+  }
+}
+
 export interface DFAGraph {
   nodes: {
     [id: string]: DFANode;
@@ -34,7 +118,7 @@ export interface DFAGraph {
   edges: { [key: string]: DFAEdge };
 }
 
-export function createDFAGraph(dfa: DFA): DFAGraph {
+export function createDFAGraph(dfa: DFA) {
   const nodes: DFAGraph['nodes'] = {};
   const edges: DFAGraph['edges'] = {};
   // if (!DFA.isDFAValid(dfa)) return { nodes, edges };
@@ -87,7 +171,7 @@ export function createDFAGraph(dfa: DFA): DFAGraph {
 function calculateEdge(from: DFANode, to: DFANode) {
   // TODO
   const radius = from.x === to.x ? 20 : Math.abs(from.x - to.x) / 2;
-  const fromX = from.state === to.state ? from.x - 10 : from.x;
+  const fromX = from.x === to.x ? from.x - 10 : from.x;
   const fromY = from.state === to.state ? from.y + 10 : from.y;
   const toX = from.state === to.state ? to.x - 10 : to.x;
   const toY = from.state === to.state ? to.y - 10 : to.y;

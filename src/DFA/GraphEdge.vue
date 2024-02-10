@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { DFAEdge } from './DFAGraph';
+import { DFAEdge, DFAGraph } from './DFAGraph';
 import Node from '../Canvas/Node.vue';
 import { Path, Text } from '../Canvas/Shapes';
+import { computed } from 'vue';
 
-// const { edge } = defineProps<{ edge: DFAEdge }>();
-const edge = defineModel<DFAEdge>({ required: true });
+const { edge, graph } = defineProps<{ edge: DFAEdge; graph: DFAGraph }>();
+const layout = computed(() => graph.getEdgeWithLayout(edge));
 </script>
 
 <template>
   <!-- Graph.Edge -->
   <Node
     :As="Path"
-    :d="edge.arrow"
+    :d="layout.arrow"
     :style="{
       stroke: edge.isActive ? 'red' : 'orange',
       fill: edge.isActive ? 'red' : 'orange',
@@ -21,7 +22,7 @@ const edge = defineModel<DFAEdge>({ required: true });
   />
   <Node
     :As="Path"
-    :d="edge.arc"
+    :d="layout.arc"
     :style="{
       stroke: edge.isActive ? 'red' : 'orange',
       fill: 'transparent',
@@ -31,8 +32,8 @@ const edge = defineModel<DFAEdge>({ required: true });
   />
   <Node
     :As="Text"
-    :x="edge.text.x"
-    :y="edge.text.y"
+    :x="layout.text.x"
+    :y="layout.text.y"
     :width="20"
     :textContent="edge.conditions.join('')"
     :style="{
