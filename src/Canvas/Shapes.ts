@@ -71,6 +71,7 @@ export abstract class Shape implements Interactable {
 
   abstract draw(renderer: Renderer): void;
   abstract isInside(p: Geometry.Point): boolean;
+  abstract getBoundingRect(renderer: Renderer): Geometry.Rectangle | null;
 }
 
 export class Rectangle extends Shape {
@@ -95,6 +96,10 @@ export class Rectangle extends Shape {
     return false;
   }
 
+  getBoundingRect() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height };
+  }
+
   draw(renderer: Renderer) {
     const context = renderer.context;
     context.save();
@@ -108,13 +113,6 @@ export class Rectangle extends Shape {
     context.fillRect(0, 0, this.width, this.height);
     if (this.style.strokeWidth) context.strokeRect(this.x, this.y, this.width, this.height);
     context.restore();
-
-    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-    });
 
     if (this.style.pointerEvents === 'all') {
       const hitContext = renderer.hitContext;
@@ -136,6 +134,10 @@ export class Path extends Shape {
 
   isInside() {
     return false;
+  }
+
+  getBoundingRect() {
+    return null;
   }
 
   draw(renderer: Renderer) {
@@ -185,6 +187,10 @@ export class Circle extends Shape {
     return distanceFromCenter <= this.r;
   }
 
+  getBoundingRect() {
+    return { x: this.cx - this.r, y: this.cy - this.r, width: this.r * 2, height: this.r * 2 };
+  }
+
   draw(renderer: Renderer) {
     const context = renderer.context;
 
@@ -204,13 +210,6 @@ export class Circle extends Shape {
     context.stroke();
     context.closePath();
     context.restore();
-
-    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
-      x: this.cx - this.r,
-      y: this.cy - this.r,
-      width: this.r * 2,
-      height: this.r * 2,
-    });
 
     if (this.style.pointerEvents === 'all') {
       const hitContext = renderer.hitContext;
@@ -249,6 +248,24 @@ export class Text extends Shape {
     return false;
   }
 
+  getBoundingRect(renderer: Renderer) {
+    const textMetrics = renderer.context.measureText(this.textContent);
+    const p = {
+      x: 0 - textMetrics.actualBoundingBoxLeft,
+      y: 0 - textMetrics.actualBoundingBoxAscent - 1,
+    };
+    const p1 = {
+      x: 0 + textMetrics.actualBoundingBoxRight + 1,
+      y: 0 + textMetrics.actualBoundingBoxDescent + 1,
+    };
+    return {
+      x: this.x + p.x,
+      y: this.y + p.y,
+      width: textMetrics.width,
+      height: p1.y - p.y,
+    };
+  }
+
   draw(renderer: Renderer) {
     const context = renderer.context;
 
@@ -282,13 +299,6 @@ export class Text extends Shape {
 
     context.fillText(this.textContent, 0, 0);
     context.restore();
-
-    renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
-      x: this.x + p.x,
-      y: this.y + p.y,
-      width: textMetrics.width,
-      height: p1.y - p.y,
-    });
 
     if (this.style.pointerEvents === 'all') {
       const hitContext = renderer.hitContext;

@@ -44,6 +44,8 @@ export class Renderer {
   }
 
   setCanvas(canvas: HTMLCanvasElement) {
+    const isFirstTime = !this.canvas;
+
     this.canvas = canvas;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
@@ -60,6 +62,8 @@ export class Renderer {
     this.canvas.addEventListener('pointerdown', this);
     this.canvas.addEventListener('pointerup', this);
     this.canvas.addEventListener('pointermove', this);
+
+    if (isFirstTime) this.fitContentToView();
   }
 
   setSize(width: number, height: number) {
@@ -87,6 +91,19 @@ export class Renderer {
     this.hitContext.restore();
   }
 
+  drawBoundingRect() {
+    this.context.save();
+    this.context.resetTransform();
+    this.context.setTransform(...this.transform.canvasTransform);
+    this.context.strokeRect(
+      this.boundingBox.x,
+      this.boundingBox.y,
+      this.boundingBox.width,
+      this.boundingBox.height,
+    );
+    this.context.restore();
+  }
+
   draw() {
     this.clear();
 
@@ -104,16 +121,21 @@ export class Renderer {
     }
 
     this.elements.sort((a, b) => (a?.style?.zIndex ?? 0) - (b?.style?.zIndex ?? 0));
-    this.boundingBox = { x: 0, y: 0, width: 0, height: 0 };
+    let boundingBox = null;
     for (const element of this.elements) {
       element.draw(this);
+
+      const rect = element.getBoundingRect(this);
+      if (rect && !boundingBox) boundingBox = rect;
+      else if (rect && boundingBox) boundingBox = Geometry.mergeRectangle(boundingBox, rect);
     }
+    this.boundingBox = boundingBox ?? { x: 0, y: 0, width: 0, height: 0 };
 
     this.context.restore();
     this.hitContext.restore();
   }
 
-  fitContentToView(viewPort?: Geometry.Rectangle) {
+  async fitContentToView(viewPort?: Geometry.Rectangle) {
     if (!this.canvas) return 0;
     this.draw();
 
@@ -131,7 +153,17 @@ export class Renderer {
 
     this.transform.translation = [originX, originY];
     this.transform.scaling = [1, 1];
-    this.transform.zoomTo([drawingCenterX - viewPort.x, drawingCenterY - viewPort.y], scale);
+
+    this.draw();
+
+    const center = {
+      x: this.boundingBox.x + this.boundingBox.width / 2,
+      y: this.boundingBox.y + this.boundingBox.height / 2,
+    };
+
+    this.transform.zoomTo([center.x, center.y], scale * 0.5);
+
+    this.draw();
   }
 
   // Handle Events

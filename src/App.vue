@@ -36,24 +36,40 @@ const dfa = reactive(new DFA());
 const visualizer = ref<InstanceType<typeof DFAVisualizer> | null>(null);
 
 onMounted(() => {
-  for (const name of states) {
-    dfa.addState(name);
-  }
-  dfa.setAlphabet(alphabet);
-  for (const fromName in transitions) {
-    const from = dfa.states.find((s) => s.name === fromName);
-    if (from) {
-      for (const condition in transitions[fromName]) {
-        const to = dfa.states.find((s) => s.name === transitions[fromName][condition]);
-        if (to) dfa.addTransition(from, condition, to);
-      }
-    }
-  }
+  // for (const name of states) {
+  //   dfa.addState(name);
+  // }
+  // dfa.setAlphabet(alphabet);
+  // for (const fromName in transitions) {
+  //   const from = dfa.states.find((s) => s.name === fromName);
+  //   if (from) {
+  //     for (const condition in transitions[fromName]) {
+  //       const to = dfa.states.find((s) => s.name === transitions[fromName][condition]);
+  //       if (to) dfa.addTransition(from, condition, to);
+  //     }
+  //   }
+  // }
 
-  // @ts-ignore
-  dfa.setInitialState(dfa.states.find((s) => s.name === states[0]));
-  // @ts-ignore
-  dfa.addAcceptState(dfa.states.find((s) => s.name === states[3]));
+  // // @ts-ignore
+  // dfa.setInitialState(dfa.states.find((s) => s.name === states[0]));
+  // // @ts-ignore
+  // dfa.addAcceptState(dfa.states.find((s) => s.name === states[3]));
+
+  dfa.addState('q1');
+  dfa.addState('q2');
+  dfa.addState('q3');
+  dfa.setAlphabet('ab');
+  dfa.addTransition(dfa.states[0], 'a', dfa.states[2]);
+  dfa.addTransition(dfa.states[0], 'b', dfa.states[2]);
+
+  dfa.addTransition(dfa.states[1], 'a', dfa.states[0]);
+  dfa.addTransition(dfa.states[1], 'b', dfa.states[2]);
+
+  dfa.addTransition(dfa.states[2], 'a', dfa.states[0]);
+  dfa.addTransition(dfa.states[2], 'b', dfa.states[0]);
+
+  dfa.setInitialState(dfa.states[0]);
+  dfa.addAcceptState(dfa.states[2]);
 });
 </script>
 
