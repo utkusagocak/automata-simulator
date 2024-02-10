@@ -27,6 +27,7 @@ export interface Style {
   background?: string;
 
   pointerEvents?: 'none' | 'all';
+  cursor?: string;
 }
 
 export interface Interactable {

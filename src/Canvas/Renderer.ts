@@ -28,7 +28,7 @@ export class Renderer {
   constructor(canvas?: HTMLCanvasElement) {
     if (canvas) this.setCanvas(canvas);
 
-    const hitContext = this.hitCanvas.getContext('2d');
+    const hitContext = this.hitCanvas.getContext('2d', { willReadFrequently: true });
     if (hitContext === null) throw new Error('2d context not initialized.');
     this.hitContext = hitContext;
   }
@@ -52,8 +52,9 @@ export class Renderer {
 
     const context = canvas.getContext('2d');
     if (context === null) throw new Error('2d context not initialized.');
-    this.context = this.hitContext;
-    this.hitContext = context;
+    this.context = context;
+    // this.context = this.hitContext;
+    // this.hitContext = context;
 
     this.canvas.addEventListener('click', this);
     this.canvas.addEventListener('pointerdown', this);
@@ -134,6 +135,21 @@ export class Renderer {
   }
 
   // Handle Events
+  currentHover: string | null = null; // Shape ID| null
+  setCurrentHover(id: string | null = null) {
+    this.currentHover = id;
+    if (this.currentHover && this.hitMap[this.currentHover]) {
+      const shape = this.hitMap[this.currentHover];
+      if (shape.style.cursor) {
+        this.canvas.style.cursor = shape.style.cursor;
+      } else if (this.canvas.style.cursor) {
+        this.canvas.style.cursor = '';
+      }
+    } else if (this.canvas.style.cursor) {
+      this.canvas.style.cursor = '';
+    }
+  }
+
   handleEvent(event: Event) {
     switch (event.type) {
       case 'click':
@@ -144,6 +160,9 @@ export class Renderer {
         return this.handleOnPointerUp(event as PointerEvent);
       case 'pointermove':
         return this.handleOnPointerMove(event as PointerEvent);
+      case 'pointerleave':
+        this.setCurrentHover();
+        return;
       case 'dblclick':
         return this.handleOnDoubleClick(event as PointerEvent);
       default:
@@ -194,6 +213,9 @@ export class Renderer {
     const shapeId = Shape.idFromPixel(pixel);
     const target = this.hitMap[shapeId];
 
+    if (target) this.setCurrentHover(target.id);
+    else this.setCurrentHover();
+
     if (target && target?.onPointerMove) {
       return target.onPointerMove(event, target);
     }
@@ -209,5 +231,14 @@ export class Renderer {
     if (target && target?.onDoubleClick) {
       return target.onDoubleClick(event, target);
     }
+  }
+
+  // Position Getters
+  transformScreenCoordinatesToCanvas(screen: Geometry.Point) {
+    const rect = this?.canvas.getBoundingClientRect();
+    const clickAreaX = screen.x - rect.x;
+    const clickAreaY = screen.y - rect.y;
+    const [x, y] = this.transform.transformInverse([clickAreaX, clickAreaY]);
+    return { x, y };
   }
 }

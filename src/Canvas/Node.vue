@@ -29,7 +29,7 @@ const renderer = inject<Renderer>('renderer');
 const draw = inject<() => void>('draw');
 const element = new As();
 
-function updatElement() {
+function updatElement(props: Props) {
   for (const key in props) {
     // @ts-ignore
     if (key !== 'As' || key !== 'style') {
@@ -48,14 +48,14 @@ function updatElement() {
 }
 
 onUpdated(() => {
-  updatElement();
+  updatElement(props);
 });
 
-watch(() => props, updatElement, { deep: true, immediate: true });
+watch(() => props, updatElement, { deep: true });
 
 onMounted(() => {
   if (renderer) {
-    updatElement();
+    updatElement(props);
     renderer.addElement(element);
   }
 });

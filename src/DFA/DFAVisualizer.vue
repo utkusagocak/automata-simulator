@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { DFA } from './DFA';
-import { createDFAGraph } from './DFAGraph';
+import { DFAGraph, createDFAGraph } from './DFAGraph';
 import Canvas from '../Canvas/Canvas.vue';
-import Node from '../Canvas/Node.vue';
-import { Circle, Path, Text } from '../Canvas/Shapes';
+import GraphNode from './GraphNode.vue';
+import GraphEdge from './GraphEdge.vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
-const graph = computed(() => {
-  return createDFAGraph(dfa);
-});
+// const graph = computed(() => {
+//   return createDFAGraph(dfa);
+// });
+
+const graph = ref<DFAGraph>({ nodes: {}, edges: {} });
+watch(
+  () => dfa,
+  (dfa) => {
+    graph.value = createDFAGraph(dfa);
+  },
+  { deep: true },
+);
 
 const canvas = ref<InstanceType<typeof Canvas>>();
 defineExpose({ controls: canvas, grap: graph });
@@ -19,73 +28,11 @@ defineExpose({ controls: canvas, grap: graph });
 <template>
   <Canvas ref="canvas" id="dfa-graph-canvas">
     <!-- Graph.Edge -->
-    <template v-for="(edge, key, index) in graph.edges" :key="key">
-      <Node
-        :As="Path"
-        :d="edge.arrow"
-        :style="{
-          stroke: edge.isActive ? 'red' : 'orange',
-          fill: edge.isActive ? 'red' : 'orange',
-          strokeWidth: 0.5,
-          zIndex: 0,
-        }"
-      />
-      <Node
-        :As="Path"
-        :d="edge.arc"
-        :style="{
-          stroke: edge.isActive ? 'red' : 'orange',
-          fill: 'transparent',
-          zIndex: 0,
-          pointerEvents: 'all',
-        }"
-      />
-      <Node
-        :As="Text"
-        :x="edge.text.x"
-        :y="edge.text.y"
-        :width="20"
-        :textContent="edge.conditions.join('')"
-        :style="{
-          fill: 'white',
-          font: '10px monospace',
-          textAlign: 'center',
-          textBaseline: 'middle',
-          background: '#242424',
-          zIndex: 1,
-        }"
-      />
+    <template>
+      <GraphEdge v-for="(edge, key, index) in graph.edges" :key="key" v-model="graph.edges[key]" />
     </template>
     <!-- Graph.Node -->
-    <template v-for="(node, key, index) in graph.nodes" :key="key">
-      <Node
-        :As="Circle"
-        :cx="node.x"
-        :cy="node.y"
-        :r="20"
-        :style="{
-          fill: node.isActive ? 'red' : 'orange',
-          stroke: 'orange',
-          zIndex: 1,
-          pointerEvents: 'all',
-        }"
-      />
-      <Node
-        :As="Text"
-        :x="node.x"
-        :y="node.y"
-        :width="20"
-        :textContent="node.state.name"
-        :style="{ fill: 'black', zIndex: 4 }"
-      />
-      <Node
-        :As="Circle"
-        :cx="node.x"
-        :cy="node.y"
-        :r="18"
-        :style="{ fill: 'transparent', stroke: node.isAccept ? 'white' : 'transparent', zIndex: 2 }"
-      />
-    </template>
+    <GraphNode v-for="(node, key, index) in graph.nodes" :key="key" v-model="graph.nodes[key]" />
   </Canvas>
 </template>
 
