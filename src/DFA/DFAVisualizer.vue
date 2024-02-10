@@ -7,15 +7,10 @@ import GraphNode from './GraphNode.vue';
 import GraphEdge from './GraphEdge.vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
-// const graph = computed(() => {
-//   return createDFAGraph(dfa);
-// });
-
 const graph = ref<DFAGraph>(new DFAGraph());
 watch(
   () => dfa,
   (dfa) => {
-    // graph.value = createDFAGraph(dfa);
     graph.value.updateGraph(dfa);
   },
   { deep: true },

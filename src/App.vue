@@ -71,7 +71,7 @@ onMounted(() => {
       </div>
 
       <DFAControls :dfa="dfa" />
-      <DFAVisualizerControls :visualizer="visualizer" />
+      <!-- <DFAVisualizerControls :visualizer="visualizer" /> -->
       <DFADesigner :dfa="dfa" />
     </div>
   </div>
