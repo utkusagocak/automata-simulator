@@ -37,6 +37,7 @@ defineExpose({ controls: canvas, grap: graph });
           stroke: edge.isActive ? 'red' : 'orange',
           fill: 'transparent',
           zIndex: 0,
+          pointerEvents: 'all',
         }"
       />
       <Node
@@ -62,7 +63,12 @@ defineExpose({ controls: canvas, grap: graph });
         :cx="node.x"
         :cy="node.y"
         :r="20"
-        :style="{ fill: node.isActive ? 'red' : 'orange', stroke: 'orange', zIndex: 1 }"
+        :style="{
+          fill: node.isActive ? 'red' : 'orange',
+          stroke: 'orange',
+          zIndex: 1,
+          pointerEvents: 'all',
+        }"
       />
       <Node
         :As="Text"

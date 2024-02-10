@@ -2,11 +2,18 @@ import { Geometry } from '../math';
 import { Shape } from './Shapes';
 import { Transform2D } from './Transform2D';
 
+export type RenderingContext2D = OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
+
 export class Renderer {
   canvas!: HTMLCanvasElement;
-  context!: CanvasRenderingContext2D;
+  context!: RenderingContext2D;
+
+  hitCanvas: OffscreenCanvas = new OffscreenCanvas(1, 1);
+  hitContext: RenderingContext2D;
+  hitMap: { [key: string]: Shape } = {};
 
   elements: Shape[] = [];
+
   boundingBox: Geometry.Rectangle = { x: 0, y: 0, width: 0, height: 0 };
 
   transform: Transform2D = new Transform2D();
@@ -20,24 +27,33 @@ export class Renderer {
 
   constructor(canvas?: HTMLCanvasElement) {
     if (canvas) this.setCanvas(canvas);
+
+    const hitContext = this.hitCanvas.getContext('2d');
+    if (hitContext === null) throw new Error('2d context not initialized.');
+    this.hitContext = hitContext;
   }
 
   addElement(element: Shape) {
     this.elements.push(element);
+    this.hitMap[element.id] = element;
   }
 
   removeElement(element: Shape) {
     this.elements = this.elements.filter((e) => e !== element);
+    delete this.hitMap[element.id];
   }
 
   setCanvas(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+    this.hitCanvas.width = this.width;
+    this.hitCanvas.height = this.height;
 
     const context = canvas.getContext('2d');
     if (context === null) throw new Error('2d context not initialized.');
-    this.context = context;
+    this.context = this.hitContext;
+    this.hitContext = context;
 
     this.canvas.addEventListener('click', this);
     this.canvas.addEventListener('pointerdown', this);
@@ -52,6 +68,8 @@ export class Renderer {
     if (this.canvas) {
       this.canvas.width = this.width;
       this.canvas.height = this.height;
+      this.hitCanvas.width = this.width;
+      this.hitCanvas.height = this.height;
       this.draw();
     }
   }
@@ -61,16 +79,27 @@ export class Renderer {
     this.context.resetTransform();
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.restore();
+
+    this.hitContext.save();
+    this.hitContext.resetTransform();
+    this.hitContext.clearRect(0, 0, this.hitCanvas.width, this.hitCanvas.height);
+    this.hitContext.restore();
   }
 
   draw() {
     this.clear();
 
     this.context.save();
+    this.hitContext.save();
 
     if (this.transform) {
       this.context.resetTransform();
       this.context.transform(...this.transform.canvasTransform);
+    }
+
+    if (this.transform) {
+      this.hitContext.resetTransform();
+      this.hitContext.transform(...this.transform.canvasTransform);
     }
 
     this.elements.sort((a, b) => (a?.style?.zIndex ?? 0) - (b?.style?.zIndex ?? 0));
@@ -80,6 +109,7 @@ export class Renderer {
     }
 
     this.context.restore();
+    this.hitContext.restore();
   }
 
   fitContentToView(viewPort?: Geometry.Rectangle) {
@@ -124,55 +154,60 @@ export class Renderer {
   handleOnClick(event: PointerEvent) {
     const rect = this.canvas.getBoundingClientRect();
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
+    const pixel = this.hitContext.getImageData(point.x, point.y, 1, 1).data;
+    const shapeId = Shape.idFromPixel(pixel);
+    const target = this.hitMap[shapeId];
 
-    for (const element of this.elements) {
-      if (element.onClick && element.isInside(point)) {
-        return element.onClick(event, element);
-      }
+    if (target && target?.onClick) {
+      return target.onClick(event, target);
     }
   }
 
   handleOnPointerDown(event: PointerEvent) {
     const rect = this.canvas.getBoundingClientRect();
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
+    const pixel = this.hitContext.getImageData(point.x, point.y, 1, 1).data;
+    const shapeId = Shape.idFromPixel(pixel);
+    const target = this.hitMap[shapeId];
 
-    for (const element of this.elements) {
-      if (element.onPointerDown && element.isInside(point)) {
-        return element.onPointerDown(event, element);
-      }
+    if (target && target?.onPointerDown) {
+      return target.onPointerDown(event, target);
     }
   }
 
   handleOnPointerUp(event: PointerEvent) {
     const rect = this.canvas.getBoundingClientRect();
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
+    const pixel = this.hitContext.getImageData(point.x, point.y, 1, 1).data;
+    const shapeId = Shape.idFromPixel(pixel);
+    const target = this.hitMap[shapeId];
 
-    for (const element of this.elements) {
-      if (element.onPointerUp && element.isInside(point)) {
-        return element.onPointerUp(event, element);
-      }
+    if (target && target?.onPointerUp) {
+      return target.onPointerUp(event, target);
     }
   }
 
   handleOnPointerMove(event: PointerEvent) {
     const rect = this.canvas.getBoundingClientRect();
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
+    const pixel = this.hitContext.getImageData(point.x, point.y, 1, 1).data;
+    const shapeId = Shape.idFromPixel(pixel);
+    const target = this.hitMap[shapeId];
 
-    for (const element of this.elements) {
-      if (element.onPointerMove && element.isInside(point)) {
-        return element.onPointerMove(event, element);
-      }
+    if (target && target?.onPointerMove) {
+      return target.onPointerMove(event, target);
     }
   }
 
   handleOnDoubleClick(event: PointerEvent) {
     const rect = this.canvas.getBoundingClientRect();
     const point = { x: event.pageX - rect.x, y: event.pageY - rect.y };
+    const pixel = this.hitContext.getImageData(point.x, point.y, 1, 1).data;
+    const shapeId = Shape.idFromPixel(pixel);
+    const target = this.hitMap[shapeId];
 
-    for (const element of this.elements) {
-      if (element.onDoubleClick && element.isInside(point)) {
-        return element.onDoubleClick(event, element);
-      }
+    if (target && target?.onDoubleClick) {
+      return target.onDoubleClick(event, target);
     }
   }
 }

@@ -1,5 +1,12 @@
 import { Geometry } from '../math';
-import { Renderer } from './Renderer';
+import { Renderer, RenderingContext2D } from './Renderer';
+
+let count = 0;
+export function getUniqueShapeId() {
+  const intId = ++count;
+  const color = intId.toString(16);
+  return `#${'0'.repeat(6 - color.length)}${color}`;
+}
 
 export interface LocalTransform {
   scale: number;
@@ -18,6 +25,8 @@ export interface Style {
   textAlign?: CanvasTextAlign;
   textBaseline?: CanvasTextBaseline;
   background?: string;
+
+  pointerEvents?: 'none' | 'all';
 }
 
 export interface Interactable {
@@ -29,6 +38,7 @@ export interface Interactable {
 }
 
 export abstract class Shape implements Interactable {
+  id: string;
   style: Style = { zIndex: 0 };
   transform: LocalTransform | null = null;
 
@@ -38,7 +48,20 @@ export abstract class Shape implements Interactable {
   onPointerMove?: (event: Event, rect: Shape) => void;
   onDoubleClick?: (event: Event, rect: Shape) => void;
 
-  applyTransform(contex: CanvasRenderingContext2D) {
+  constructor() {
+    this.id = getUniqueShapeId();
+  }
+
+  static idFromPixel(data: number[] | Uint8ClampedArray) {
+    return (
+      '#' +
+      data[0].toString(16).padStart(2, '0') +
+      data[1].toString(16).padStart(2, '0') +
+      data[2].toString(16).padStart(2, '0')
+    );
+  }
+
+  applyTransform(contex: RenderingContext2D) {
     if (this.transform === null) return;
     contex.translate(...this.transform.translation);
     contex.scale(this.transform.scale, this.transform.scale);
@@ -91,6 +114,15 @@ export class Rectangle extends Shape {
       width: this.width,
       height: this.height,
     });
+
+    if (this.style.pointerEvents === 'all') {
+      const hitContext = renderer.hitContext;
+      hitContext.save();
+      this.applyTransform(hitContext);
+      hitContext.fillStyle = this.id;
+      hitContext.fillRect(0, 0, this.width, this.height);
+      hitContext.restore();
+    }
   }
 }
 
@@ -119,6 +151,21 @@ export class Path extends Shape {
     context.stroke(path);
     context.restore();
 
+    if (this.style.pointerEvents === 'all') {
+      const hitContext = renderer.hitContext;
+      hitContext.save();
+      this.applyTransform(hitContext);
+      if (this.style.fill && this.style.fill !== 'transparent') {
+        hitContext.fillStyle = this.id;
+        hitContext.fill(path);
+      }
+      if (this.style.stroke) {
+        hitContext.strokeStyle = this.id;
+        hitContext.stroke(path);
+      }
+      hitContext.restore();
+    }
+
     // TODO: calculate bounding box for path
   }
 }
@@ -133,7 +180,7 @@ export class Circle extends Shape {
   }
 
   isInside(p: Geometry.Point) {
-    const distanceFromCenter = Math.sqrt(Math.pow(this.cx - p.x, 2) + Math.pow(this.cy - p.y, 2));
+    const distanceFromCenter = Math.hypot(this.cx - p.x, this.cy - p.y);
     return distanceFromCenter <= this.r;
   }
 
@@ -163,6 +210,19 @@ export class Circle extends Shape {
       width: this.r * 2,
       height: this.r * 2,
     });
+
+    if (this.style.pointerEvents === 'all') {
+      const hitContext = renderer.hitContext;
+      hitContext.save();
+      hitContext.translate(this.cx, this.cy);
+      this.applyTransform(hitContext);
+      hitContext.fillStyle = this.id;
+      hitContext.beginPath();
+      hitContext.arc(0, 0, this.r, 0, 2 * Math.PI);
+      hitContext.fill();
+      hitContext.closePath();
+      hitContext.restore();
+    }
   }
 }
 
@@ -221,11 +281,21 @@ export class Text extends Shape {
 
     context.fillText(this.textContent, 0, 0);
     context.restore();
+
     renderer.boundingBox = Geometry.mergeRectangle(renderer.boundingBox, {
       x: this.x + p.x,
       y: this.y + p.y,
       width: textMetrics.width,
       height: p1.y - p.y,
     });
+
+    if (this.style.pointerEvents === 'all') {
+      const hitContext = renderer.hitContext;
+      hitContext.save();
+      this.applyTransform(hitContext);
+      hitContext.fillStyle = this.id;
+      hitContext.fillRect(p.x, p.y, textMetrics.width, p1.y - p.y);
+      hitContext.restore();
+    }
   }
 }
