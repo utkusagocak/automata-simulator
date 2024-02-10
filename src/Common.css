@@ -1,3 +1,4 @@
+/* Button variants */
 button {
   cursor: pointer;
 
@@ -48,6 +49,25 @@ button:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Text input */
+select,
+textarea,
+input {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  background-color: rgb(59, 59, 59, 0.9);
+  font-size: 1rem;
+
+  resize: none;
+}
+
+select {
+  cursor: pointer;
+}
+
+/* Checkbox & Radio */
 
 input[type='checkbox'],
 input[type='radio'] {

@@ -37,7 +37,7 @@ function handleStop() {
 
 <template>
   <div class="panel">
-    <div className="panel-title">DFA Controls</div>
+    <div className="panel-title">Controls</div>
 
     <div
       class="panel-content dfa-controls d-flex flex-column align-items-center gap-1"
@@ -47,7 +47,7 @@ function handleStop() {
         class="d-flex justify-content-center"
         :style="{ position: 'relative', paddingTop: '1rem' }"
       >
-        <div
+        <!-- <div
           class="chevron-pointer"
           :style="{
             top: '0px',
@@ -57,7 +57,7 @@ function handleStop() {
           }"
         >
           <LucideChevronDown />
-        </div>
+        </div> -->
         <div
           v-for="(state, index) in dfa.states"
           :key="state.id"
@@ -106,6 +106,7 @@ function handleStop() {
       <div class="d-flex gap-1 align-items-center justify-content-center">
         <button
           class="icon-btn"
+          title="Start/Stop"
           @click="
             (e) => {
               if (started) {
@@ -124,6 +125,7 @@ function handleStop() {
         </button>
         <button
           class="icon-btn"
+          title="Reset"
           @click="
             (e) => {
               handleStop();
@@ -136,6 +138,7 @@ function handleStop() {
         </button>
         <button
           class="icon-btn"
+          title="Next State"
           @click="(e) => !dfa.inTransition && dfa.nextAsync()"
           :disabled="dfa.inTransition || dfa.isEnd() || started"
         >

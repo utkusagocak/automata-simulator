@@ -34,7 +34,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
 
 <template>
   <div class="panel dfa-designer-panel">
-    <div class="panel-title">DFA Designer</div>
+    <div class="panel-title">Designer</div>
     <div
       class="panel-content dfa-designer"
       :class="{ dragging: drag.dragging }"
@@ -42,7 +42,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
         display: 'grid',
         width: '',
         height: '100%',
-        gridTemplateColumns: `2rem 1.5rem 1.5rem 2rem ${
+        gridTemplateColumns: `2rem 1.5rem 1.5rem 4rem ${
           dfa.alphabet.length > 0
             ? ` [transition-start] repeat(${dfa.alphabet.length}, 4rem) [transition-end]`
             : ''
@@ -55,6 +55,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
     >
       <div
         class="text-truncate"
+        title=""
         :style="{
           gridColumn: 'transition-start / transition-end',
           display: dfa.alphabet.length > 0 ? '' : 'none',
@@ -74,6 +75,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
         <div></div>
         <div
           class="d-flex justify-content-center align-center"
+          title="Initial State"
           :style="{
             width: '100%',
             height: '100%',
@@ -84,16 +86,18 @@ function handleStartDrag(e: PointerEvent, target: string) {
 
         <div
           class="d-flex justify-content-center align-center"
+          title="Accept States"
           :style="{
             width: '100%',
             height: '100%',
           }"
         >
-          F
+          A
         </div>
 
         <div
           class="d-flex justify-content-center align-center"
+          title="States\Alphabet"
           :style="{
             width: '100%',
             height: '100%',
@@ -126,7 +130,12 @@ function handleStartDrag(e: PointerEvent, target: string) {
           "
         />
 
-        <button class="icon-btn" style="{{}}" @click="() => dfa.setAlphabet([...dfa.alphabet, ''])">
+        <button
+          title="Add character"
+          class="icon-btn"
+          style="{{}}"
+          @click="() => dfa.setAlphabet([...dfa.alphabet, ''])"
+        >
           <LucidePlus />
         </button>
       </div>
@@ -161,9 +170,11 @@ function handleStartDrag(e: PointerEvent, target: string) {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
           }"
         >
           <input
+            title="Make initial state"
             type="radio"
             :id="state.id"
             :checked="state.id === dfa.initialState"
@@ -178,9 +189,11 @@ function handleStartDrag(e: PointerEvent, target: string) {
             height: '100%',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
           }"
         >
           <input
+            title="Make accept state"
             type="checkbox"
             :checked="dfa.acceptStates.has(state.id)"
             @input="
@@ -204,9 +217,9 @@ function handleStartDrag(e: PointerEvent, target: string) {
           v-model="state.name"
         />
 
-        <input
+        <!-- <input
           v-for="(letter, letterIndex) in dfa.alphabet"
-          :key="state.id + '-' + letterIndex"
+          :key="state.id + '|' + letterIndex"
           class="d-flex justify-content-center align-center dfa-designer-transition-input"
           :style="{
             width: '100%',
@@ -221,8 +234,34 @@ function handleStartDrag(e: PointerEvent, target: string) {
             if (desState) dfa.addTransition(state, letter, desState);
           }"
           :value="dfa.getStateFromId(dfa.nextState(state.id, letter))?.name ?? ''"
-        />
-        <button class="icon-btn btn-danger" @click="() => dfa.removeState(state)">
+        /> -->
+        <select
+          v-for="(letter, letterIndex) in dfa.alphabet"
+          :key="state.id + '|' + letterIndex"
+          class="d-flex justify-content-center align-center dfa-designer-transition-input"
+          :style="{
+            width: '100%',
+            height: '100%',
+            border: '1px solid transparent',
+            textAlign: 'center',
+          }"
+          :value="dfa.getStateFromId(dfa.nextState(state.id, letter))?.id ?? ''"
+          @input="
+            (e) => {
+              const value = (e.target as HTMLInputElement)?.value;
+               dfa.addTransition(state, letter, value);
+            }
+          "
+        >
+          <option v-for="(state, stateIndex) in dfa.states" :value="state.id">
+            {{ state.name }}
+          </option>
+        </select>
+        <button
+          class="icon-btn btn-danger"
+          title="Remove state"
+          @click="() => dfa.removeState(state)"
+        >
           <LucideTrash />
         </button>
       </div>
@@ -239,15 +278,15 @@ function handleStartDrag(e: PointerEvent, target: string) {
         <div></div>
         <div></div>
 
-        <button class="icon-btn" @click="() => dfa.addState('')">
+        <button title="Add state" class="icon-btn" @click="() => dfa.addState('')">
           <LucidePlus />
         </button>
 
         <button
+          title="Remove character"
           v-for="(letter, index) in dfa.alphabet"
           :key="index + '-delete'"
           className="icon-btn btn-danger"
-          :style="{ justifySelf: 'center' }"
           @click="
             () => {
               const alphabet = [...dfa.alphabet];
@@ -263,5 +302,8 @@ function handleStartDrag(e: PointerEvent, target: string) {
   </div>
 </template>
 
-<style scoped></style>
-../DFA/DFA
+<style scoped>
+button {
+  justify-self: center;
+}
+</style>

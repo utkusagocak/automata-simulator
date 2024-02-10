@@ -11,24 +11,24 @@ import DFAVisualizer from './DFA/DFAVisualizer.vue';
 import { Geometry } from './math';
 import DFAVisualizerControls from './DFA/DFAVisualizerControls.vue';
 
-const states = ['1', '2', '3', '4'];
+const states = ['q1', 'q2', 'q3', 'q4'];
 const alphabet = 'ab';
 const transitions: DFATransitions = {
-  1: {
-    a: '2',
-    b: '1',
+  q1: {
+    a: 'q2',
+    b: 'q1',
   },
-  2: {
-    a: '2',
-    b: '3',
+  q2: {
+    a: 'q2',
+    b: 'q3',
   },
-  3: {
-    a: '4',
-    b: '1',
+  q3: {
+    a: 'q4',
+    b: 'q1',
   },
-  4: {
-    a: '4',
-    b: '4',
+  q4: {
+    a: 'q4',
+    b: 'q4',
   },
 };
 
@@ -51,11 +51,9 @@ onMounted(() => {
   }
 
   // @ts-ignore
-  dfa.setInitialState(dfa.states.find((s) => s.name === '1'));
+  dfa.setInitialState(dfa.states.find((s) => s.name === states[0]));
   // @ts-ignore
-  dfa.addAcceptState(dfa.states.find((s) => s.name === '4'));
-
-  dfa.setInput('bababa');
+  dfa.addAcceptState(dfa.states.find((s) => s.name === states[3]));
 });
 </script>
 

@@ -80,17 +80,6 @@
   pointer-events: none;
 }
 
-textarea,
-input {
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 4px;
-  background-color: rgb(59, 59, 59, 0.9);
-  font-size: 1rem;
-
-  resize: none;
-}
-
 .dfa-controls.disabled {
   filter: blur(1px);
   cursor: not-allowed;
