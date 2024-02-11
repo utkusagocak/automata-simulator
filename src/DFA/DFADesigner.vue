@@ -2,6 +2,7 @@
 import { LucideGripVertical, LucidePlus, LucideTrash } from 'lucide-vue-next';
 import { DFA } from './DFA';
 import { ref } from 'vue';
+import Panel from '../components/Panel.vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
 
@@ -33,8 +34,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
 </script>
 
 <template>
-  <div class="panel dfa-designer-panel">
-    <div class="panel-title">Designer</div>
+  <Panel header="Designer" class="dfa-designer-panel">
     <div
       class="panel-content dfa-designer"
       :class="{ dragging: drag.dragging }"
@@ -276,7 +276,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
         </button>
       </div>
     </div>
-  </div>
+  </Panel>
 </template>
 
 <style scoped>

@@ -171,15 +171,15 @@
 .panel-title {
   display: flex;
   align-items: center;
-  padding: 4px 4px;
+  padding: 8px 4px;
   justify-content: center;
 }
 
 .panel-title:not(:last-child) {
-  margin-bottom: 8px;
-  border-bottom-width: 2px;
+  /* margin-bottom: 8px; */
+  /* border-bottom-width: 2px;
   border-bottom-style: solid;
-  border-bottom-color: rgba(126, 126, 126, 0.3);
+  border-bottom-color: rgba(126, 126, 126, 0.3); */
 }
 
 .panel-content {
@@ -190,6 +190,7 @@
 .dfa-designer {
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 .dfa-designer-panel {

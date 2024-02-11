@@ -14,6 +14,7 @@ import {
   LucideChevronRight,
   LucideMenu,
 } from 'lucide-vue-next';
+import Panel from './components/Panel.vue';
 
 const dfa = reactive(new DFA());
 const visualizer = ref<InstanceType<typeof DFAVisualizer> | null>(null);
@@ -76,7 +77,6 @@ const rightPanelOpen = ref(true);
         <DFAControls v-if="rightPanelOpen" :dfa="dfa" />
       </Transition>
 
-      <!-- <DFAVisualizerControls :visualizer="visualizer" /> -->
       <Transition name="panel">
         <DFADesigner v-if="rightPanelOpen" :dfa="dfa" />
       </Transition>
@@ -88,25 +88,21 @@ const rightPanelOpen = ref(true);
 .right-panel {
   pointer-events: none;
 }
-.panel {
-  pointer-events: all;
+
+.panel-enter-active,
+.panel-leave-active {
+  transition: 0.25s ease;
+}
+.panel-enter-from,
+.panel-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
 }
 .right-panel-toggle {
   pointer-events: all;
   border-radius: 4px;
   align-self: end;
   margin: 0px;
-}
-
-.panel-enter-active,
-.panel-leave-active {
-  transition: 0.5s linear;
-}
-
-.panel-enter-from,
-.panel-leave-to {
-  transform: translateX(100%);
-  /* opacity: 0; */
 }
 
 #visible-area {

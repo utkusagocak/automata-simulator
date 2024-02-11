@@ -9,6 +9,7 @@ import {
 } from 'lucide-vue-next';
 import { DFA } from './DFA';
 import { ref } from 'vue';
+import Panel from '../components/Panel.vue';
 
 const { dfa } = defineProps<{ dfa: DFA }>();
 
@@ -36,9 +37,7 @@ function handleStop() {
 </script>
 
 <template>
-  <div class="panel">
-    <div className="panel-title">Controls</div>
-
+  <Panel header="Controls">
     <div
       class="panel-content dfa-controls d-flex flex-column align-items-center gap-1"
       :class="{ disabled: DFA.isDFAValid(dfa) !== true }"
@@ -146,7 +145,7 @@ function handleStop() {
         </button>
       </div>
     </div>
-  </div>
+  </Panel>
 </template>
 
 <style scoped>
