@@ -8,7 +8,12 @@ import './Common.css';
 import DFADesigner from './DFA/DFADesigner.vue';
 import DFAControls from './DFA/DFAControls.vue';
 import DFAVisualizer from './DFA/DFAVisualizer.vue';
-import { LucideAlertCircle } from 'lucide-vue-next';
+import {
+  LucideAlertCircle,
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideMenu,
+} from 'lucide-vue-next';
 
 const dfa = reactive(new DFA());
 const visualizer = ref<InstanceType<typeof DFAVisualizer> | null>(null);
@@ -35,6 +40,8 @@ dfa.addAcceptState(q3);
 const dfaError = computed(() => {
   return DFA.isDFAValid(dfa);
 });
+
+const rightPanelOpen = ref(true);
 </script>
 
 <template>
@@ -54,20 +61,58 @@ const dfaError = computed(() => {
     </div>
 
     <div class="right-panel">
-      <div className="panel description-panel">
-        <div className="panel-title">Deterministic Finite State Automata</div>
-      </div>
+      <button class="right-panel-toggle icon-btn" @click="() => (rightPanelOpen = !rightPanelOpen)">
+        <LucideChevronRight e v-if="rightPanelOpen" />
+        <LucideChevronLeft e v-if="!rightPanelOpen" />
+      </button>
 
-      <DFAControls :dfa="dfa" />
+      <Transition name="panel">
+        <div v-if="rightPanelOpen" className="panel description-panel">
+          <div className="panel-title">Deterministic Finite State Automata</div>
+        </div>
+      </Transition>
+
+      <Transition name="panel">
+        <DFAControls v-if="rightPanelOpen" :dfa="dfa" />
+      </Transition>
+
       <!-- <DFAVisualizerControls :visualizer="visualizer" /> -->
-      <DFADesigner :dfa="dfa" />
+      <Transition name="panel">
+        <DFADesigner v-if="rightPanelOpen" :dfa="dfa" />
+      </Transition>
     </div>
   </div>
 </template>
 
 <style scoped>
+.right-panel {
+  pointer-events: none;
+}
+.panel {
+  pointer-events: all;
+}
+.right-panel-toggle {
+  pointer-events: all;
+  border-radius: 4px;
+  align-self: end;
+  margin: 0px;
+}
+
+.panel-enter-active,
+.panel-leave-active {
+  transition: 0.5s linear;
+}
+
+.panel-enter-from,
+.panel-leave-to {
+  transform: translateX(100%);
+  /* opacity: 0; */
+}
+
 #visible-area {
-  padding: 8px;
+  padding: 16px;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .main {
@@ -83,11 +128,12 @@ const dfaError = computed(() => {
   align-items: center;
   gap: 0.75rem;
   color: red;
+  pointer-events: all;
 
   padding: 4px 8px;
-  /* background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(9px);
-  border-radius: 4px; */
+  border-radius: 4px;
 }
 
 .dfa-error-enter-active,

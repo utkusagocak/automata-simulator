@@ -119,6 +119,7 @@ div {
 
 canvas {
   border: 0px;
+  cursor: grab;
 }
 
 div:focus-visible,
