@@ -55,8 +55,8 @@ watch(() => props, updatElement, { deep: true });
 
 onMounted(() => {
   if (renderer) {
-    updatElement(props);
     renderer.addElement(element);
+    updatElement(props);
   }
 });
 

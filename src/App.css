@@ -51,27 +51,7 @@
   z-index: 0;
   position: absolute;
   inset: 0px;
-}
-
-.graph-container:after {
-  content: '';
-  position: absolute;
-  inset: 0px;
-  pointer-events: none;
-
-  --scale: 1.5;
-  box-shadow: inset 0px 0px calc(var(--padding) * var(--scale)) calc(var(--padding) * var(--scale))
-    var(--page-bg);
-
-  /* Blured border or padding */
-  /*   
-  --fill: linear-gradient(to right, black, transparent var(--padding) calc(100% - var(--padding)), black),
-    linear-gradient(to bottom, black, transparent var(--padding) calc(100% - var(--padding)), black);
-
-  mask: var(--fill);
-  backdrop-filter: blur(100px);
-  background-color: rgba(36, 36, 36, 0.3); 
-  */
+  contain: paint;
 }
 
 #visible-graph-area {

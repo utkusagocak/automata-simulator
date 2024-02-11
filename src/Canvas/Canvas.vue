@@ -120,4 +120,9 @@ div {
 canvas {
   border: 0px;
 }
+
+div:focus-visible,
+canvas:focus-visible {
+  outline: none;
+}
 </style>

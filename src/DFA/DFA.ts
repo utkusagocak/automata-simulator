@@ -2,9 +2,7 @@ function delay(delay = 100) {
   return new Promise((resolve) => setTimeout(resolve, delay));
 }
 
-export type DFATransitionFunction = (currentState: DFAState, input: string) => DFAState;
 export type DFATransitionMatrix = { [key: string]: { [key: string]: string } };
-export type DFATransitions = DFATransitionMatrix;
 
 export interface DFAAction {
   from: DFAState;
@@ -20,10 +18,8 @@ export interface DFAData {
   T: DFATransitionMatrix;
 }
 
-type DFAStateId = string;
-
 export interface DFAState {
-  id: DFAStateId;
+  id: string;
   name: string;
 }
 
@@ -45,13 +41,13 @@ export class DFA {
   public states: DFAState[] = [];
   public alphabet: DFASymbol[] = [];
   public transitions: DFATransitionMatrix = {};
-  public initialState: DFAStateId = '';
-  public acceptStates: Set<DFAStateId> = new Set();
+  public initialState: string = '';
+  public acceptStates: Set<string> = new Set();
 
   // Process
   public input: string = '';
   public currentIndex: number = -1;
-  public currentState: DFAStateId = this.initialState;
+  public currentState: string = this.initialState;
   public inTransition: boolean = false;
 
   constructor() {}
@@ -155,7 +151,7 @@ export class DFA {
     return this.currentIndex;
   }
 
-  nextState(stateId: DFAStateId, char: string) {
+  nextState(stateId: string, char: string) {
     let nextState = stateId;
 
     const symbol = this.alphabet.find((s) => s.char === char);
@@ -222,16 +218,22 @@ export class DFA {
 
   // Validation
   static isDFAValid(dfa: DFA) {
-    if (!dfa.states.some((s) => s.id === dfa.initialState)) return false;
-    if (!dfa.states.some((s) => dfa.acceptStates.has(s.id))) return false;
+    if (!dfa.states.some((s) => s.id === dfa.initialState)) return 'Define an initial state.';
+    if (!dfa.states.some((s) => dfa.acceptStates.has(s.id)))
+      return 'Define at least one accept state.';
+
+    if (dfa.states.some((s) => !s.name)) return 'Name all states.';
+
     for (const symbol of dfa.alphabet) {
-      if (!symbol.char) return;
+      if (!symbol.char) return 'Empty symbol in alphabet.';
+      if (dfa.alphabet.some((s) => s.id !== symbol.id && s.char === symbol.char))
+        return 'Repeating symbol in alphabet.';
     }
 
     for (const state of dfa.states) {
       for (const chr of dfa.alphabet) {
         const transition = dfa.nextState(state.id, chr.char);
-        if (!dfa.states.some((s) => s.id === transition)) return false;
+        if (!dfa.states.some((s) => s.id === transition)) return 'Missing transition.';
       }
     }
 

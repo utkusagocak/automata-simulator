@@ -41,7 +41,7 @@ function handleStop() {
 
     <div
       class="panel-content dfa-controls d-flex flex-column align-items-center gap-1"
-      :class="{ disabled: !DFA.isDFAValid(dfa) }"
+      :class="{ disabled: DFA.isDFAValid(dfa) !== true }"
     >
       <div
         class="d-flex justify-content-center"
