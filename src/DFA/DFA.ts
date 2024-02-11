@@ -27,6 +27,11 @@ export interface DFAState {
   name: string;
 }
 
+export interface DFASymbol {
+  id: string;
+  char: string;
+}
+
 /**
  * Deterministic Finite State Automata
  * @property states Q: finit set of state
@@ -38,7 +43,7 @@ export interface DFAState {
 export class DFA {
   // Definition
   public states: DFAState[] = [];
-  public alphabet: string[] = [];
+  public alphabet: DFASymbol[] = [];
   public transitions: DFATransitionMatrix = {};
   public initialState: DFAStateId = '';
   public acceptStates: Set<DFAStateId> = new Set();
@@ -56,11 +61,17 @@ export class DFA {
     return this.states.find((s) => s.id === id);
   }
 
+  getSymbolFromId(id: string) {
+    return this.alphabet.find((s) => s.id === id);
+  }
+
   addState(name: string) {
-    this.states.push({
+    const state = {
       name,
       id: crypto.randomUUID(),
-    });
+    };
+    this.states.push(state);
+    return state;
   }
 
   moveState(from: number, to: number) {
@@ -80,16 +91,35 @@ export class DFA {
     this.states = this.states.filter((s) => s.id !== id);
   }
 
-  setAlphabet(alphabet: string | string[]) {
-    this.alphabet = [...new Set([...alphabet])];
+  addSymbol(char: string) {
+    char = char[0] ?? '';
+    const symbol = {
+      char,
+      id: crypto.randomUUID(),
+    };
+
+    this.alphabet.push(symbol);
+    return symbol;
   }
 
-  addTransition(from: DFAState | string, condition: string, to: DFAState | string) {
+  updateSymbol(id: string, char: string) {
+    char = char[0] ?? '';
+    const symbol = this.getSymbolFromId(id);
+    if (symbol) symbol.char = char;
+    this.alphabet = [...this.alphabet];
+  }
+
+  removeSymbol(id: string) {
+    this.alphabet = this.alphabet.filter((s) => s.id !== id);
+  }
+
+  addTransition(from: DFAState | string, condition: DFASymbol | string, to: DFAState | string) {
     const fromId = typeof from === 'string' ? from : from.id;
     const toId = typeof to === 'string' ? to : to.id;
+    const symbolId = typeof condition === 'string' ? condition : condition.id;
 
     if (!this.transitions[fromId]) this.transitions[fromId] = {};
-    this.transitions[fromId][condition] = toId;
+    this.transitions[fromId][symbolId] = toId;
   }
 
   setInitialState(state: DFAState) {
@@ -125,10 +155,11 @@ export class DFA {
     return this.currentIndex;
   }
 
-  nextState(stateId: DFAStateId, letter: string) {
+  nextState(stateId: DFAStateId, char: string) {
     let nextState = stateId;
 
-    nextState = this.transitions?.[stateId]?.[letter] ?? stateId;
+    const symbol = this.alphabet.find((s) => s.char === char);
+    if (symbol) nextState = this.transitions?.[stateId]?.[symbol.id] ?? stateId;
 
     return nextState;
   }
@@ -193,10 +224,13 @@ export class DFA {
   static isDFAValid(dfa: DFA) {
     if (!dfa.states.some((s) => s.id === dfa.initialState)) return false;
     if (!dfa.states.some((s) => dfa.acceptStates.has(s.id))) return false;
+    for (const symbol of dfa.alphabet) {
+      if (!symbol.char) return;
+    }
 
     for (const state of dfa.states) {
       for (const chr of dfa.alphabet) {
-        const transition = dfa.nextState(state.id, chr);
+        const transition = dfa.nextState(state.id, chr.char);
         if (!dfa.states.some((s) => s.id === transition)) return false;
       }
     }

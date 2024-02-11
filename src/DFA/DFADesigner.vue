@@ -107,7 +107,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
         </div>
 
         <input
-          v-for="(letter, index) in dfa.alphabet"
+          v-for="(symbol, index) in dfa.alphabet"
           :key="index"
           class="d-flex justify-content-center align-center"
           :style="{
@@ -117,16 +117,13 @@ function handleStartDrag(e: PointerEvent, target: string) {
             // borderRadius: '0px',
             border: '1px solid transparent',
           }"
-          :value="letter"
-          @change="(e) => {
-            const alphabet = [...dfa.alphabet];
-            const value = (e.target as HTMLInputElement)?.value;
-            const letter = value.length > 1 ? value[value.length - 1] : value;
-            if (!alphabet.includes(letter)) {
-              alphabet[index] = letter;
-              dfa.setAlphabet(alphabet);
+          :value="symbol.char"
+          @input="
+            (e) => {
+              const value = (e.target as HTMLInputElement).value;
+              const char = value[value.length - 1] ?? '';
+              dfa.updateSymbol(symbol.id, char);
             }
-          }
           "
         />
 
@@ -134,7 +131,7 @@ function handleStartDrag(e: PointerEvent, target: string) {
           title="Add character"
           class="icon-btn"
           style="{{}}"
-          @click="() => dfa.setAlphabet([...dfa.alphabet, ''])"
+          @click="() => dfa.addSymbol('')"
         >
           <LucidePlus />
         </button>
@@ -217,26 +214,8 @@ function handleStartDrag(e: PointerEvent, target: string) {
           v-model="state.name"
         />
 
-        <!-- <input
-          v-for="(letter, letterIndex) in dfa.alphabet"
-          :key="state.id + '|' + letterIndex"
-          class="d-flex justify-content-center align-center dfa-designer-transition-input"
-          :style="{
-            width: '100%',
-            height: '100%',
-            border: '1px solid transparent',
-            textAlign: 'center',
-          }"
-          @input="
-          (e) => {
-            const value = (e.target as HTMLInputElement)?.value;
-            const desState = dfa.states.find((s) => s.name === value);
-            if (desState) dfa.addTransition(state, letter, desState);
-          }"
-          :value="dfa.getStateFromId(dfa.nextState(state.id, letter))?.name ?? ''"
-        /> -->
         <select
-          v-for="(letter, letterIndex) in dfa.alphabet"
+          v-for="(symbol, letterIndex) in dfa.alphabet"
           :key="state.id + '|' + letterIndex"
           class="d-flex justify-content-center align-center dfa-designer-transition-input"
           :style="{
@@ -245,11 +224,11 @@ function handleStartDrag(e: PointerEvent, target: string) {
             border: '1px solid transparent',
             textAlign: 'center',
           }"
-          :value="dfa.getStateFromId(dfa.nextState(state.id, letter))?.id ?? ''"
+          :value="dfa.getStateFromId(dfa.nextState(state.id, symbol.char))?.id ?? ''"
           @input="
             (e) => {
               const value = (e.target as HTMLInputElement)?.value;
-               dfa.addTransition(state, letter, value);
+               dfa.addTransition(state, symbol.id, value);
             }
           "
         >
@@ -284,14 +263,12 @@ function handleStartDrag(e: PointerEvent, target: string) {
 
         <button
           title="Remove character"
-          v-for="(letter, index) in dfa.alphabet"
+          v-for="(symbol, index) in dfa.alphabet"
           :key="index + '-delete'"
           className="icon-btn btn-danger"
           @click="
             () => {
-              const alphabet = [...dfa.alphabet];
-              const alphabet2 = alphabet.filter((_, i) => i !== index);
-              dfa.setAlphabet(alphabet2);
+              dfa.removeSymbol(symbol.id);
             }
           "
         >

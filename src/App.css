@@ -159,7 +159,7 @@
   grid-column: -2;
   grid-row: 1;
 
-  max-width: 350px;
+  /* max-width: 350px; */
   max-height: 100%;
 
   display: flex;

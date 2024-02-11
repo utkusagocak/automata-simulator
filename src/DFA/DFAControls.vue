@@ -72,7 +72,7 @@ function handleStop() {
       </div>
 
       <div class="d-flex justify-content-center dfa-controls-input-container">
-        <input placeholder="Enter Input" v-model="dfa.input" />
+        <input title="Test input" placeholder="Enter input" v-model="dfa.input" />
         <div
           v-for="(l, i) in dfa.input.split('')"
           :key="i"

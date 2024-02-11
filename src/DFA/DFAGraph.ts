@@ -76,8 +76,8 @@ export class DFAGraph {
     }
 
     for (const state of dfa.states) {
-      for (const letter of dfa.alphabet) {
-        const nextStateId = dfa.nextState(state.id, letter);
+      for (const symbol of dfa.alphabet) {
+        const nextStateId = dfa.nextState(state.id, symbol.char);
         const key = `${state.id}-${nextStateId}`;
 
         if (nextStateId && this.nodes[state.id] && this.nodes[nextStateId]) {
@@ -86,7 +86,7 @@ export class DFAGraph {
             this.edges[key] = { from: state.id, to: nextStateId, conditions: [] };
           }
 
-          this.edges[key].conditions.push(letter);
+          this.edges[key].conditions.push(symbol.char);
           newEdges[key] = true;
         }
       }
@@ -109,63 +109,6 @@ export class DFAGraph {
       };
     }
   }
-}
-
-export interface DFAGraph {
-  nodes: {
-    [id: string]: DFANode;
-  };
-  edges: { [key: string]: DFAEdge };
-}
-
-export function createDFAGraph(dfa: DFA) {
-  const nodes: DFAGraph['nodes'] = {};
-  const edges: DFAGraph['edges'] = {};
-  // if (!DFA.isDFAValid(dfa)) return { nodes, edges };
-
-  const lastY = 0;
-  let lastX = 0;
-  for (const state of dfa.states) {
-    nodes[state.id] = {
-      state: state,
-      x: lastX,
-      y: lastY,
-      isStart: dfa.initialState === state.id,
-      isAccept: dfa.acceptStates.has(state.id),
-      isActive: dfa.currentState === state.id,
-    };
-    lastX += 100;
-  }
-
-  for (const state of dfa.states) {
-    for (const letter of dfa.alphabet) {
-      const nextStateId = dfa.nextState(state.id, letter);
-      const key = `${state.id}-${nextStateId}`;
-
-      if (nextStateId && nodes[state.id] && nodes[nextStateId]) {
-        if (!edges[key]) {
-          // @ts-ignore
-          edges[key] = { from: state.id, to: nextStateId, conditions: [] };
-        }
-
-        edges[key].conditions.push(letter);
-      }
-    }
-  }
-
-  for (const key in edges) {
-    const edge = edges[key];
-    edges[key] = {
-      ...edge,
-      isActive:
-        dfa.inTransition &&
-        dfa.currentState === edge.from &&
-        edge.conditions.includes(dfa.input[dfa.currentIndex]),
-      ...calculateEdge(nodes[edge.from], nodes[edge.to]),
-    };
-  }
-
-  return { nodes, edges };
 }
 
 function calculateEdge(from: DFANode, to: DFANode) {
