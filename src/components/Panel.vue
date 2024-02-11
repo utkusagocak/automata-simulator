@@ -39,10 +39,11 @@ const collapsed = ref(defaultCollapse ?? false);
 
 .panel-title span {
   line-height: 1em;
-  backdrop-filter: blur(9px);
 }
 
 .panel-title {
+  border-radius: 4px;
+
   justify-content: space-between;
   align-items: center;
 }

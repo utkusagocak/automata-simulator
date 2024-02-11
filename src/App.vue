@@ -108,6 +108,8 @@ const rightPanelOpen = ref(true);
   border-radius: 4px;
   align-self: end;
   margin: 0px;
+  margin-bottom: -8px;
+  background-color: rgb(0 0 0 / 50%);
 }
 
 #visible-area {
