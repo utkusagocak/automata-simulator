@@ -15,6 +15,7 @@ import {
   LucideMenu,
 } from 'lucide-vue-next';
 import Panel from './components/Panel.vue';
+import DFADefinition from './DFA/DFADefinition.vue';
 
 const dfa = reactive(new DFA());
 const visualizer = ref<InstanceType<typeof DFAVisualizer> | null>(null);
@@ -71,6 +72,10 @@ const rightPanelOpen = ref(true);
         <div v-if="rightPanelOpen" className="panel description-panel">
           <div className="panel-title">Deterministic Finite State Automata</div>
         </div>
+      </Transition>
+
+      <Transition name="panel">
+        <DFADefinition v-if="rightPanelOpen" :dfa="dfa" />
       </Transition>
 
       <Transition name="panel">

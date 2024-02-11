@@ -2,8 +2,8 @@
 import { LucideChevronDown, LucideChevronUp } from 'lucide-vue-next';
 import { reactive, onMounted, ref, computed } from 'vue';
 
-const { header } = defineProps<{ header: string }>();
-const collapsed = ref(false);
+const { header, defaultCollapse } = defineProps<{ defaultCollapse?: boolean; header: string }>();
+const collapsed = ref(defaultCollapse ?? false);
 </script>
 
 <template>
