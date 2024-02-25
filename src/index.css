@@ -69,7 +69,7 @@ input {
 
 @supports not selector(--webkit--scrollbar) {
   * {
-    scrollbar-color: gray transparent;
+    scrollbar-color: orange transparent;
     scrollbar-width: thin;
   }
 }

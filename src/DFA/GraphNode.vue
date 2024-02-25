@@ -29,7 +29,7 @@ function handleStartDrag(e: Event, shape: Shape) {
       e.preventDefault();
       if (renderer?.canvas) {
         const { x, y } = renderer.transformScreenCoordinatesToCanvas({ x: e.pageX, y: e.pageY });
-        const newX = x - offset.x;
+        const newX = Math.round((x - offset.x) / 20) * 20;
 
         for (const id in props.graph.nodes) {
           const n = props.graph.nodes[id];

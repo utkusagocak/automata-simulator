@@ -57,6 +57,7 @@ useResizeObserver<HTMLDivElement>(async (newSize) => {
 }, containerRef);
 
 defineExpose({
+  renderer,
   fitToView,
 });
 
@@ -94,7 +95,7 @@ function onWheel(e: WheelEvent) {
     const clickAreaY = e.pageY - rect.y;
     const [x, y] = renderer.transform.transformInverse([clickAreaX, clickAreaY]);
     const zoom = e.deltaY > 0 ? 0.9 : 1.1;
-    if (renderer.transform.scaling[0] * zoom < 250) {
+    if (renderer.transform.scaling[0] * zoom < 5 && renderer.transform.scaling[0] * zoom > 0.5) {
       renderer.transform.zoomTo([x, y], zoom);
     }
     draw();

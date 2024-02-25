@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, onUpdated, watch } from 'vue';
 import { Renderer } from './Renderer';
-import { Interactable, Style, Circle, Text, Rectangle, Path } from './Shapes';
+import { Interactable, Style, Circle, Text, Rectangle, Path, CustomShape, Shape } from './Shapes';
 
 interface Props extends Interactable {
-  As: typeof Circle | typeof Text | typeof Rectangle | typeof Path;
+  As: typeof Circle | typeof Text | typeof Rectangle | typeof Path | typeof CustomShape;
   style?: Style;
 
   cx?: number;
@@ -20,6 +20,7 @@ interface Props extends Interactable {
   height?: number;
 
   textContent?: string;
+  customDraw?: CustomShape['draw'];
 }
 
 const props = defineProps<Props>();
@@ -63,7 +64,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (renderer) {
     renderer.removeElement(element);
-    renderer.draw();
+    draw?.();
   }
 });
 </script>

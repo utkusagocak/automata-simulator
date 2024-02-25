@@ -310,3 +310,19 @@ export class Text extends Shape {
     }
   }
 }
+
+export class CustomShape extends Shape {
+  customDraw?: Shape['draw'];
+
+  draw(renderer: Renderer) {
+    this.customDraw?.(renderer);
+  }
+
+  // Custom drawing are not interactable for now.
+  isInside(p: Geometry.Point): boolean {
+    return false;
+  }
+  getBoundingRect(renderer: Renderer): Geometry.Rectangle | null {
+    return null;
+  }
+}
