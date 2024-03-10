@@ -37,8 +37,8 @@ function drawGrid(renderer: Renderer) {
 
   context.save();
   context.resetTransform();
-  context.strokeStyle = 'whitesmoke';
-  context.lineWidth = 0.1;
+  context.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  context.lineWidth = 1;
 
   context.beginPath();
   for (let x = xStart; x < xEnd; x += space) {
