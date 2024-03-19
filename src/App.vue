@@ -48,6 +48,9 @@ const rightPanelOpen = ref(true);
 
 <template>
   <div class="main" :class="{ error: dfaError !== true }">
+    <div className="graph-container">
+      <DFAVisualizer ref="visualizer" :dfa="dfa" />
+    </div>
     <div id="visible-area">
       <Transition name="dfa-error">
         <div class="dfa-error" :key="dfaError" v-if="dfaError !== true">
@@ -57,9 +60,6 @@ const rightPanelOpen = ref(true);
           </span>
         </div>
       </Transition>
-    </div>
-    <div className="graph-container">
-      <DFAVisualizer ref="visualizer" :dfa="dfa" />
     </div>
 
     <div class="right-panel">
@@ -121,7 +121,11 @@ const rightPanelOpen = ref(true);
 .main {
   transition: box-shadow 0.5s linear;
 }
-.main.error {
+.main.error::after {
+  content: ' ';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   box-shadow: inset 48px 48px 12px -48px red;
 }
 

@@ -60,10 +60,10 @@
   inset: 0px;
   pointer-events: none;
 
-  --padding: 48px;
+  --padding: 8px;
   --scale: 1.5;
-  /* box-shadow: inset 0px 0px calc(var(--padding) * var(--scale)) calc(var(--padding) * var(--scale))
-    var(--page-bg); */
+  box-shadow: inset 0px 0px calc(var(--padding) * var(--scale)) calc(var(--padding) * var(--scale))
+    var(--page-bg);
 
   /* Blured border or padding */
 
@@ -75,9 +75,9 @@
     ),
     linear-gradient(to bottom, black, transparent var(--padding) calc(100% - var(--padding)), black);
 
-  mask: var(--fill);
+  /* mask: var(--fill);
   backdrop-filter: blur(100px);
-  background-color: rgba(36, 36, 36, 0.3);
+  background-color: rgba(36, 36, 36, 0.3); */
 }
 
 #visible-graph-area {
